@@ -1,0 +1,7 @@
+body {
+  font-family: "Red Hat Display", sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
