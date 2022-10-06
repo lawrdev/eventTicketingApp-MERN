@@ -3,6 +3,8 @@ import { Header } from './components/Header'
 import { Home } from './pages/Home'
 import { Register } from './pages/Register'
 import { Login } from './pages/Login'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (<>
@@ -13,6 +15,11 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
       </Routes>
+      <ToastContainer
+        // hideProgressBar
+        limit={2}
+      // className="text-sm mt-2" 
+      />
     </div>
   </>);
 }
