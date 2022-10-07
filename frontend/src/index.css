@@ -1,7 +1,30 @@
 body {
   font-family: "Red Hat Display", sans-serif;
+  /* background-color: #f8f9fa; */
 }
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a:hover {
+  @apply underline;
+}
+.btn {
+  @apply hover:duration-300;
+}
+.btn:hover {
+  transition-duration: 300ms;
+  transform: scale(0.98);
+}
+
+.formWrapper {
+  @apply px-4 py-6 rounded-2xl shadow-lg;
+  border: 2px solid #ddd;
+}
+
+.headerTitle {
+  @apply font-bold text-xl;
+}
+.headerSubTitle {
+  @apply text-gray-500 font-semibold p-1;
+}
