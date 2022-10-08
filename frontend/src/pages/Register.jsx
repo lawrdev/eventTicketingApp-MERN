@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -13,9 +14,11 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Input from "@mui/material/Input";
 import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { useSelector, useDispatch } from "react-redux";
-import { register } from "../features/auth/authSlice";
+import { register, reset } from "../features/auth/authSlice";
+import { snack, resetSnackbar } from "../features/global/globalSlice";
 
 export function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,26 +31,45 @@ export function Register() {
 
   // store dispatch
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // destructure values from the 'auth' global state
-  const { user, isLoading, isSuccess, message } = useSelector(
+  const { user, isSuccess, isError, message } = useSelector(
     (state) => state.auth
   );
+
+  useEffect(() => {
+    // call a toast if there's error, toast the error message
+    if (isError) {
+      dispatch(snack(message));
+    }
+
+    // if successfull or there's user returned
+    if (isSuccess || user) {
+      navigate("/");
+
+      // then we dispatch the reset and CALL IT!, to reset the reducer states
+      dispatch(reset());
+    }
+
+    // finally we include all dependencies
+  }, [isError, message, isSuccess, dispatch, navigate, user]);
 
   // update data onchange
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
   // on submit of form
   const onSubmit = (e) => {
     e.preventDefault();
+    dispatch(resetSnackbar());
 
     dispatch(
       register({
