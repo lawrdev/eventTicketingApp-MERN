@@ -1,6 +1,6 @@
 body {
   font-family: "Red Hat Display", sans-serif;
-  /* background-color: #f8f9fa; */
+  background-color: #f8f9fa !important;
 }
 @tailwind base;
 @tailwind components;
@@ -27,4 +27,10 @@ a:hover {
 }
 .headerSubTitle {
   @apply text-gray-500 font-semibold p-1;
+}
+
+/* snackbar */
+#bud div.MuiSnackbar-root .MuiPaper-root {
+  @apply !rounded-2xl !py-2.5;
+  /*border: 2px solid #fff;*/
 }
