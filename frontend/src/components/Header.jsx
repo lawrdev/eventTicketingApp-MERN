@@ -39,7 +39,7 @@ export function Header() {
 
   return (
     <header>
-      <div className="mt-2 mb-6 select-none">
+      <div className="mt-2 mb-2 select-none">
         <div className=" !text-gray-700">
           <Toolbar>
             <div style={{ flexGrow: 1 }}>

@@ -4,16 +4,16 @@ const mongoose = require('mongoose')
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        required: ['true', 'Please enter a name']
+        required: [true, 'Please enter a name']
     },
     email: {
         type: String,
-        required: ['email', 'Please enter your email address'],
+        required: [true, 'Please enter your email address'],
         unique: true
     },
     password: {
         type: String,
-        required: ['true', 'Please enter a password']
+        required: [true, 'Please enter a password']
     },
     // users needing extra permissions
     isAdmin: {
