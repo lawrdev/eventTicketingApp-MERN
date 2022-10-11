@@ -17,12 +17,12 @@ export function Home() {
         <Button
           fullWidth
           variant="outlined"
-          onClick={() => navigate("/new-ticket")}
+          onClick={() => navigate("/create-event")}
           sx={{ textTransform: "none" }}
           className="!font-bold !border-2"
           startIcon={<AddCircleOutlineOutlinedIcon />}
         >
-          Create New Ticket
+          Create New Event
         </Button>
         <Button
           fullWidth
