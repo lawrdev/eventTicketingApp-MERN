@@ -1,21 +1,34 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
-import InterestsOutlinedIcon from "@mui/icons-material/InterestsOutlined";
+import StyleIcon from "@mui/icons-material/Style";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
 import demoIMG from "../assets/img/demo.jpg";
+import LogoutIcon from "@mui/icons-material/Logout";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
+import Box from "@mui/material/Box";
+import MenuList from "./MenuList";
+
+const list = [
+  "Popular events",
+  "Create an event",
+  "View Profile",
+  "About this project",
+  "Settings",
+];
 
 export function Header() {
   const [anchor, setAnchor] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,45 +49,66 @@ export function Header() {
 
     navigate("/");
   };
+  const onProfile = () => {
+    handleClose();
+    navigate("/profile");
+  };
 
   return (
     <header>
       <div className="mt-2 mb-2 select-none">
         <div className=" !text-gray-700">
-          <Toolbar>
-            <div style={{ flexGrow: 1 }}>
-              <div
-                onClick={() => navigate("/")}
-                className="flex items-center cursor-pointer w-fit"
-              >
-                <InterestsOutlinedIcon fontSize="large" />
-                <h3 className="font-bold ml-2 tracking-wide whitespace-nowrap">
-                  Tickets App
-                </h3>
-              </div>
+          <Toolbar className="!justify-between">
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              sx={{ mr: 2, display: { sm: "none" } }}
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            <div
+              className="cursor-pointer  hover:bg-black rounded-full
+                hover:bg-opacity-5 p-1.5 duration-300 ease-in-out"
+              onClick={() => navigate("/")}
+            >
+              <StyleIcon fontSize="large" />
             </div>
+
+            <Box
+              className="flex-grow"
+              sx={{ display: { display: "none", sm: "block" } }}
+            >
+              <p className="font-bold w-fit cursor-pointer">
+                EventTicketing App
+              </p>
+            </Box>
 
             {!user ? (
               <div className="flex gap-1">
                 <Button
-                  // disableElevation
+                  size="small"
                   onClick={() => navigate("/login")}
-                  sx={{ textTransform: "none" }}
                   color="primary"
-                  variant="outlined"
+                  variant="standard"
+                  className="!text-blue-500"
                 >
-                  Login
+                  Sign in
                 </Button>
-                <Button
-                  disableElevation
-                  onClick={() => navigate("/register")}
-                  sx={{ textTransform: "none" }}
-                  startIcon={<PersonAddAlt1OutlinedIcon />}
-                  variant="contained"
-                  color="primary"
-                >
-                  Register
-                </Button>
+                <Box sx={{ display: { display: "none", sm: "block" } }}>
+                  <Button
+                    disableElevation
+                    size="small"
+                    startIcon={<PersonAddAlt1OutlinedIcon />}
+                    onClick={() => navigate("/register")}
+                    color="primary"
+                    variant="contained"
+                  >
+                    Register
+                  </Button>
+                </Box>
               </div>
             ) : (
               <div>
@@ -99,11 +133,11 @@ export function Header() {
                   open={Boolean(anchor)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={onProfile}>
                     <p className="text-center">Profile</p>
                   </MenuItem>
                   <MenuItem onClick={onLogout}>
-                    <p className="text-center">Logout</p>
+                    <p className="text-center">Sign out</p>
                   </MenuItem>
                 </Menu>
               </div>
@@ -113,6 +147,14 @@ export function Header() {
 
         <Divider />
       </div>
+
+      {menuOpen ? (
+        <div>
+          <div className="w-full">
+            <MenuList user={user} setMenuOpen={setMenuOpen} />
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }
