@@ -34,6 +34,7 @@ const registerUser = asyncHandler(async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        profile: {}
     })
 
     // if user was created, we send a new json data back
@@ -43,6 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            profile: {},
             token: generateToken(user._id)
         })
     } else {
@@ -66,6 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            profile: user.profile,
             token: generateToken(user._id)
         })
     } else {
@@ -90,10 +93,6 @@ const getMe = asyncHandler(async (req, res) => {
     // this should send back the user's info without password
     res.status(200).json(user)
 })
-
-
-// move the func below to different file
-
 
 // Generate Token func
 const generateToken = (id) => {

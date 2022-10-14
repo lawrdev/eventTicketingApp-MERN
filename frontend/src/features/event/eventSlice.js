@@ -3,9 +3,6 @@ import eventService from './eventService'
 // NOTE: use a extractErrorMessage function to save some repetition
 import { extractErrorMessage } from '../../util'
 
-
-// NOTE: no need for isLoading, isSuccess, isError or message as we can leverage
-// our AsyncThunkAction and get Promise reolved or rejected messages at
 // component level
 const initialState = {
     events: null,
@@ -18,10 +15,6 @@ export const createEvent = createAsyncThunk(
     'event/create',
     async (eventData, thunkAPI) => {
         try {
-            // 'thunkAPI' has a '.getState()' method
-            // which you can use to get anything else
-            // from other states. Like we're in EventSlice now, but with this mthd we can access the states in authSlice or even globalSlice
-            //  so with this we get the 'auth' reducer and access 'user' state to get the user's token
             const token = thunkAPI.getState().auth.user.token
             return await eventService.createNewEvent(eventData, token)
         } catch (error) {
@@ -70,8 +63,6 @@ export const cancelEvent = createAsyncThunk(
     }
 )
 
-// NOTE: removed loading, isSuccess state as it can be infered from presence or
-// absence of events for simpler state management with no need for a reset function in reducers
 
 export const eventSlice = createSlice({
     name: 'event',
@@ -98,4 +89,3 @@ export const eventSlice = createSlice({
 })
 
 export default eventSlice.reducer
-// 1ST:: then bring in eventSlice.reducer to the store.js

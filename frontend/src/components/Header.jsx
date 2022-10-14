@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
 import demoIMG from "../assets/img/demo.jpg";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,14 +18,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Box from "@mui/material/Box";
 import MenuList from "./MenuList";
-
-const list = [
-  "Popular events",
-  "Create an event",
-  "View Profile",
-  "About this project",
-  "Settings",
-];
 
 export function Header() {
   const [anchor, setAnchor] = useState(null);
@@ -133,11 +126,13 @@ export function Header() {
                   open={Boolean(anchor)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={onProfile}>
-                    <p className="text-center">Profile</p>
+                  <MenuItem onClick={onProfile} className="w-44">
+                    <AccountBoxOutlinedIcon />
+                    <p className="text-center ml-2">Profile</p>
                   </MenuItem>
                   <MenuItem onClick={onLogout}>
-                    <p className="text-center">Sign out</p>
+                    <LogoutIcon />
+                    <p className="text-center ml-2">Sign out</p>
                   </MenuItem>
                 </Menu>
               </div>

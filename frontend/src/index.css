@@ -6,6 +6,16 @@ body {
 @tailwind components;
 @tailwind utilities;
 
+/* hide 'number' input spin */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 a:hover {
   @apply underline;
 }
@@ -65,4 +75,42 @@ a:hover {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Profile */
+.profileImageWrapper {
+  @apply w-full rounded-md;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+.profileImageWrapper:hover .addPhoto {
+  @apply opacity-100 duration-300 ease-in-out;
+}
+.profileImgage {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+.addPhoto {
+  @apply flex opacity-0 absolute z-50 top-0 right-0 left-0 bottom-0 bg-slate-800 bg-opacity-50 justify-center items-center duration-300 ease-in-out;
+}
+
+/* search UI */
+.searchInput {
+  @apply w-full px-3 py-1 rounded bg-inherit;
+  outline: 1.2px solid rgb(107, 114, 128);
+}
+.searchIconWrapper {
+  @apply absolute right-2 top-0 bottom-0 flex items-center rounded p-1 cursor-pointer hover:scale-95;
+  outline: 1px solid rgb(107, 114, 128);
+  color: rgb(107, 114, 128);
+}
+
+/* menu list */
+.menuListItem {
+  @apply px-3 flex flex-col justify-between py-1 h-10;
+}
+.scaleDown:hover {
+  transform: scale(0.99);
 }

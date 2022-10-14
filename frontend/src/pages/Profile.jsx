@@ -7,9 +7,14 @@ import TextField from "@mui/material/TextField";
 import DemoIMG from "../assets/img/demo.jpg";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
 
 import { getEvents } from "../features/event/eventSlice";
 import { snack, resetSnackbar } from "../features/global/globalSlice";
+import EventsCard from "../components/EventsCard";
 
 const initialState = {
   user: {},
@@ -22,6 +27,7 @@ export function Profile() {
   const { events } = useSelector((state) => state.event);
   const { formData, setformData } = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isEdit, setIsEdit] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,133 +45,191 @@ export function Profile() {
       });
   }, [dispatch]);
 
+  const onCancel = () => {
+    setIsEdit(false);
+  };
+
   if (isLoading) return <Spinner />;
 
   return (
     <>
-      <section className="text-center text-lg font-bold">
+      <section className="mt-8 mb-5 text-center text-lg font-bold">
         <h3> My Profile</h3>
       </section>
 
-      <section>
-        <div className="border-2 border-gray-300 p-2">
-          <form
-            className="flex flex-col-reverse sm:flex-row"
-            autoComplete="off"
-          >
-            <div className="flex-grow" style={{ minWidth: 290 }}>
-              <div>
-                <label
-                  htmlFor="name"
-                  className="text-sm font-semibold block pb-2"
-                >
-                  Name
-                </label>
-                <TextField
-                  hiddenLabel
-                  disabled
-                  fullWidth
-                  size="small"
-                  id="name"
-                  variant="outlined"
-                  value={user.name}
-                />
-              </div>
+      <Stack spacing={3} direction={{ direction: "column", sm: "row" }}>
+        <section>
+          <div>
+            <form autoComplete="off">
+              <Stack spacing={2} direction="column">
+                <div className="mb-3 w-full max-w-xs mx-auto">
+                  <div className="relative overflow-hidden w-fit mx-auto">
+                    <div className="profileImageWrapper">
+                      <img
+                        src={DemoIMG}
+                        alt="profile"
+                        className="profileImgage"
+                      />
+                      <div className="addPhoto">
+                        <IconButton
+                          className="bg-opacity-100 !text-white hover:!text-gray-300"
+                          color="inherit"
+                          aria-label="upload picture"
+                          component="label"
+                        >
+                          <input hidden accept="image/*" type="file" />
+                          <PhotoCamera fontSize="large" />
+                        </IconButton>
+                      </div>
+                    </div>
+                  </div>
 
-              <div>
-                <label
-                  htmlFor="email"
-                  className="text-sm font-semibold block pb-2"
-                >
-                  Email
-                </label>
-                <TextField
-                  hiddenLabel
-                  disabled
-                  fullWidth
-                  size="small"
-                  id="email"
-                  variant="outlined"
-                  value={user.email}
-                />
-              </div>
+                  <div>
+                    <p className="font-semibold text-lg">{user.name}</p>
+                    <p>{user.email}</p>
+                  </div>
 
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="text-sm font-semibold block pb-2"
-                >
-                  Phone Number
-                </label>
-                <TextField
-                  hiddenLabel
-                  disabled
-                  fullWidth
-                  size="small"
-                  id="phone"
-                  variant="outlined"
-                  value={user.phone}
-                />
-              </div>
+                  <div className="my-2">
+                    <Button
+                      className="!rounded-3xl !border-2"
+                      fullWidth
+                      disableElevation
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEdit(true);
+                      }}
+                    >
+                      Edit Profile
+                    </Button>
+                  </div>
+                </div>
 
-              <div>
-                <label
-                  htmlFor="company"
-                  className="text-sm font-semibold block pb-2"
-                >
-                  Position&Company
-                </label>
-                <TextField
-                  hiddenLabel
-                  disabled
-                  fullWidth
-                  size="small"
-                  id="company"
-                  variant="outlined"
-                  value={user.Profile?.company}
-                />
-              </div>
+                {isEdit ? (
+                  <div className="w-full">
+                    <div className="mb-2">
+                      <label
+                        htmlFor="name"
+                        className="text-sm font-semibold block pb-1"
+                      >
+                        Name
+                      </label>
+                      <TextField
+                        hiddenLabel
+                        disabled
+                        fullWidth
+                        size="small"
+                        id="name"
+                        variant="outlined"
+                        value={user.name}
+                      />
+                    </div>
 
-              <div>
-                <label
-                  htmlFor="website"
-                  className="text-sm font-semibold block pb-2"
-                >
-                  Website/Blog
-                </label>
-                <TextField
-                  hiddenLabel
-                  disabled
-                  fullWidth
-                  size="small"
-                  id="website"
-                  variant="outlined"
-                  value={user.Profile?.website}
-                />
-              </div>
+                    <div className="mb-2">
+                      <label
+                        htmlFor="email"
+                        className="text-sm font-semibold block pb-1"
+                      >
+                        Email
+                      </label>
+                      <TextField
+                        hiddenLabel
+                        disabled
+                        fullWidth
+                        size="small"
+                        id="email"
+                        variant="outlined"
+                        value={user.email}
+                      />
+                    </div>
+
+                    <div className="mb-2">
+                      <label
+                        htmlFor="phone"
+                        className="text-sm font-semibold block pb-1"
+                      >
+                        Phone Number
+                      </label>
+                      <TextField
+                        hiddenLabel
+                        disabled
+                        fullWidth
+                        size="small"
+                        id="phone"
+                        variant="outlined"
+                        value={user.phone}
+                      />
+                    </div>
+
+                    <div className="mb-2">
+                      <label
+                        htmlFor="company"
+                        className="text-sm font-semibold block pb-1"
+                      >
+                        Position&Company
+                      </label>
+                      <TextField
+                        hiddenLabel
+                        disabled
+                        fullWidth
+                        size="small"
+                        id="company"
+                        variant="outlined"
+                        value={user.Profile?.company}
+                      />
+                    </div>
+
+                    <div className="mb-5">
+                      <label
+                        htmlFor="website"
+                        className="text-sm font-semibold block pb-1"
+                      >
+                        Website/Blog
+                      </label>
+                      <TextField
+                        hiddenLabel
+                        disabled
+                        fullWidth
+                        size="small"
+                        id="website"
+                        variant="outlined"
+                        value={user.Profile?.website}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="w-fit mx-auto sm:ml-auto sm:mr-0">
+                        <Stack spacing={2} direction="row">
+                          <Button variant="contained">Submit</Button>
+                          <Button variant="outlined" onClick={onCancel}>
+                            Cancel
+                          </Button>
+                        </Stack>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </Stack>
+            </form>
+          </div>
+        </section>
+
+        <section className="flex-grow" style={{ minWidth: 280 }}>
+          <div className=" flex-grow text-center">
+            <div className="mb-4">
+              <h3 className="pb-2">YOUR EVENTS</h3>
+              <Divider />
             </div>
 
-            <div>
-              <div className="relative max-w-sm mx-auto overflow-hidden rounded">
-                <div className="profileImageWrapper">
-                  <img src={DemoIMG} alt="profile" className="profileImgage" />
-                </div>
-                <div className="absolute z-50 right-0 left-0 bottom-0 bg-slate-800 bg-opacity-50  flex justify-center">
-                  <IconButton
-                    className="bg-opacity-100 !text-white"
-                    color="inherit"
-                    aria-label="upload picture"
-                    component="label"
-                  >
-                    <input hidden accept="image/*" type="file" />
-                    <PhotoCamera fontSize="medium" />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </section>
+            <ul>
+              {events?.map((item, index) => (
+                <li key={index} className="mb-5">
+                  <EventsCard event={item} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      </Stack>
     </>
   );
 }

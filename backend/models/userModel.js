@@ -15,6 +15,14 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please enter a password']
     },
+    img: {
+        data: Buffer,
+        contentType: String
+    },
+    profile: {
+        type: Object,
+        required: false
+    },
     // users needing extra permissions
     isAdmin: {
         type: Boolean,
