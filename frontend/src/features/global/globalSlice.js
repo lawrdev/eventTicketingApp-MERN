@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    isSnackbarOpen: false,
     snackbarMessage: ''
 }
 
@@ -11,11 +10,9 @@ export const globalSlice = createSlice({
     initialState,
     reducers: {
         snack: (state, action) => {
-            state.isSnackbarOpen = true
             state.snackbarMessage = action.payload
         },
         resetSnackbar: (state) => {
-            state.isSnackbarOpen = false
             state.snackbarMessage = ''
         }
     }
