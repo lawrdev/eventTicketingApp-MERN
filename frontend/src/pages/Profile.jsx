@@ -62,6 +62,7 @@ export function Profile() {
           <div>
             <form autoComplete="off">
               <Stack spacing={2} direction="column">
+                {/* profile pic */}
                 <div className="mb-3 w-full max-w-xs mx-auto">
                   <div className="relative overflow-hidden w-fit mx-auto">
                     <div className="profileImageWrapper">
