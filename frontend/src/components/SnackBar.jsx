@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { resetSnackbar } from "../features/global/globalSlice";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -8,14 +10,16 @@ function TransitionLeft(props) {
   return <Slide {...props} direction="left" />;
 }
 
-export default function SnackBar({ mssg, isOpen }) {
+export default function SnackBar({ mssg }) {
   const [open, setOpen] = useState(false);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    if (isOpen) {
+    if (mssg) {
       setOpen(true);
     }
-  }, [isOpen]);
+  }, [mssg]);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -26,6 +30,7 @@ export default function SnackBar({ mssg, isOpen }) {
       setOpen(false);
     }
     setOpen(false);
+    dispatch(resetSnackbar());
   };
 
   const action = (
@@ -45,16 +50,18 @@ export default function SnackBar({ mssg, isOpen }) {
   );
 
   return (
-    <div>
-      <Snackbar
-        open={open}
-        autoHideDuration={4000}
-        onClose={handleClose}
-        message={mssg}
-        action={action}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        TransitionComponent={TransitionLeft}
-      />
-    </div>
+    <>
+      {open && (
+        <Snackbar
+          open={true}
+          autoHideDuration={4000}
+          onClose={handleClose}
+          message={mssg}
+          action={action}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          TransitionComponent={TransitionLeft}
+        />
+      )}
+    </>
   );
 }
