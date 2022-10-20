@@ -3,18 +3,21 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Tooltip from "@mui/material/Tooltip";
+import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 
 const BackButton = () => {
   const navigate = useNavigate();
   return (
     <>
       <Tooltip title="Back">
-        <div
-          className="border-2 border-gray-500 rounded-full w-12 flex items-center justify-start py-0.5 pl-1.5 active:scale-90 cursor-pointer"
+        <IconButton
+          aria-label="back"
+          component="label"
+          className=" !text-gray-800"
           onClick={() => navigate(-1)}
         >
-          <ArrowBackIosIcon sx={{ fontSize: 14 }} />
-        </div>
+          <ArrowBackIosIcon />
+        </IconButton>
       </Tooltip>
     </>
   );
