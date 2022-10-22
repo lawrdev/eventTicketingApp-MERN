@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Header } from "../components/Header";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -13,7 +14,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Input from "@mui/material/Input";
 import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
-// 4TH: import from reducer and RTK
 import { useSelector, useDispatch } from "react-redux";
 import { login, reset } from "../features/auth/authSlice";
 import { snack, resetSnackbar } from "../features/global/globalSlice";
@@ -64,7 +64,8 @@ export function Login() {
 
   return (
     <>
-      <section className="text-center mb-6">
+      <Header />
+      <section className="text-center my-6">
         <div>
           <h3 className="headerTitle">LOGIN</h3>
           <p className="headerSubTitle">Welcome back</p>

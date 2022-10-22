@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Header } from "../components/Header";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -14,7 +15,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Input from "@mui/material/Input";
 import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { useSelector, useDispatch } from "react-redux";
 import { register, reset } from "../features/auth/authSlice";
@@ -33,26 +33,18 @@ export function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // destructure values from the 'auth' global state
   const { user, isSuccess, isError, message } = useSelector(
     (state) => state.auth
   );
 
   useEffect(() => {
-    // call a toast if there's error, toast the error message
     if (isError) {
       dispatch(snack(message));
     }
-
-    // if successfull or there's user returned
     if (isSuccess || user) {
       navigate("/");
-
-      // then we dispatch the reset and CALL IT!, to reset the reducer states
       dispatch(reset());
     }
-
-    // finally we include all dependencies
   }, [isError, message, isSuccess, dispatch, navigate, user]);
 
   // update data onchange
@@ -82,7 +74,8 @@ export function Register() {
 
   return (
     <>
-      <section className="text-center mb-6">
+      <Header />
+      <section className="text-center my-6">
         <div>
           <h3 className="headerTitle">REGISTER</h3>
           <p className="headerSubTitle">You're almost there</p>
