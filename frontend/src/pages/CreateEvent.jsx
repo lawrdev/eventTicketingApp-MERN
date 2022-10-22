@@ -5,21 +5,28 @@ import { useNavigate } from "react-router-dom";
 import { createEvent } from "../features/event/eventSlice";
 import { snack, resetSnackbar } from "../features/global/globalSlice";
 import Spinner from "../components/Spinner";
+import axios from "axios";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import PhoneIcon from "@mui/icons-material/Phone";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 import dayjs from "dayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import BackButton from "../components/BackButton";
+import ImageButtons from "../components/ImageButtons";
+
+// cloudinary keys
+const cloud_name = "dqveipmsp";
+const cloud_api_key = "245341436926946";
 
 const events = [
   "Party or Social Gathering",
@@ -41,8 +48,8 @@ const detailsInitialState = {
   title: "",
   description: "",
   location: "",
-  date: "",
-  time: "",
+  date: dayjs().format("DD MMMM, YYYY"),
+  time: dayjs().format("h:mm A"),
   phone: "",
   twitter: "",
   instagram: "",
@@ -51,23 +58,21 @@ const detailsInitialState = {
 export function CreateEvent() {
   usePrivateRoute(); // if !user redirects
 
-  //Redux auth state
   const { user } = useSelector((state) => state.auth);
 
-  const [name] = useState(user.name);
-  const [email] = useState(user.email);
+  const [name] = useState(user?.name);
+  const [email] = useState(user?.email);
   const [event, setEvent] = useState("Class, Training or Workshop");
   const [details, setDetails] = useState(detailsInitialState);
   const [eventDate, setEventDate] = useState(dayjs());
   const [isLoading, setIsLoading] = useState(false);
+  const [count, setCount] = useState(0);
+  // we need only 1 image
+  const [fileInput, setFileInput] = useState(null);
+  const [previewSource, setPreviewSource] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // on 'event type' change
-  const handleEventChange = (event) => {
-    setEvent(event.target.value);
-  };
 
   // on date/time change
   const handleDate = (newValue) => {
@@ -83,8 +88,118 @@ export function CreateEvent() {
     setDetails({ ...details, [event.target.id]: event.target.value });
   };
 
-  const onSubmit = (e) => {
+  // Image
+  const handleFileInputChange = async (e) => {
+    setPreviewSource("");
+    setCount(0);
+    dispatch(resetSnackbar());
+    // grab file(s) out of input
+    const files = Array.from(e.target.files);
+    // show file in UI
+    previewFiles(files);
+    setFileInput(files[0]);
+  };
+  const handleSaveImage = async () => {
+    if (previewSource) {
+      const { data } = await uploadImage(fileInput);
+      if (data) {
+        setDetails({
+          ...details,
+          img_id: data.img_id,
+        });
+        setCount(1);
+      }
+    }
+  };
+  const handleCancelImage = () => {
+    if (previewSource) {
+      setPreviewSource("");
+    }
+  };
+
+  // Promise that resolves 'fr.result' - base64 encoded string
+  function readFileAsDataUrl(file) {
+    return new Promise(function (resolve, reject) {
+      let fr = new FileReader();
+
+      fr.onloadend = function () {
+        resolve(fr.result);
+      };
+
+      fr.onerror = function () {
+        reject(fr);
+      };
+
+      fr.readAsDataURL(file);
+    });
+  }
+  // preview images[0] to UI
+  const previewFiles = (files) => {
+    // Abort if there were no files selected
+    if (!files.length) return;
+
+    // for array of base64-string formats for each 'file'
+    let readers = [];
+
+    // Store promises in array
+    for (let i = 0; i < files.length; i++) {
+      readers.push(readFileAsDataUrl(files[i]));
+    }
+
+    // Trigger Promises
+    Promise.all(readers).then((values) => {
+      // Values will be an array that containing base64 encoded strings for each file
+      // console.log(values);
+
+      // to preview string in UI
+      setPreviewSource(values[0]);
+    });
+  };
+
+  // upload file to cloudinary
+  const uploadImage = async (image) => {
+    // get signature. In reality you could store this in localstorage or some other cache mechanism, it's good for 1 hour
+    const signatureResponse = await axios.get("/get-signature");
+
+    // set data to upload to cloudinary
+    const data = new FormData();
+    data.append("file", image);
+    data.append("api_key", cloud_api_key);
+    data.append("signature", signatureResponse.data.signature);
+    data.append("timestamp", signatureResponse.data.timestamp);
+
+    // after setting data, then send the image to cloudinary
+    const cloudinaryResponse = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`,
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: function (e) {
+          // setCount(e.loaded / e.total);
+        },
+      }
+    );
+    // console.log(cloudinaryResponse.data);
+
+    // after upload, send the image info back to our server
+    const photoData = {
+      public_id: cloudinaryResponse.data.public_id,
+      version: cloudinaryResponse.data.version,
+      signature: cloudinaryResponse.data.signature,
+    };
+
+    const feedback = await axios.post("/image-info", photoData);
+
+    return feedback;
+  };
+
+  //  SUBMIT FORM
+  const onSubmit = async (e) => {
     e.preventDefault();
+    if (!previewSource) {
+      dispatch(snack("Please include an image"));
+      return;
+    }
     setIsLoading(true);
     dispatch(resetSnackbar());
 
@@ -136,7 +251,7 @@ export function CreateEvent() {
                 hiddenLabel
                 fullWidth
                 required
-                placeholder="Chef Zoey's Baking Classes at Ikeja"
+                placeholder="Halloween party hosted by Sara"
                 size="small"
                 id="title"
                 variant="outlined"
@@ -224,6 +339,62 @@ export function CreateEvent() {
                 value={details.description}
                 onChange={onChange}
               />
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="mb-8">
+            <div className="mb-5">
+              <h3 className="font-bold text-lg">Event Image</h3>
+              <p className="text-sm text-gray-500">
+                Make your event unique, add an image for your event (required)
+              </p>
+            </div>
+
+            <div>
+              <div className="mb-4">
+                <Button
+                  disableElevation
+                  size="small"
+                  variant="outlined"
+                  component="label"
+                  sx={{ textTransform: "none" }}
+                >
+                  <PhotoCamera sx={{ mr: 1 }} />
+                  Upload
+                  <input
+                    // required
+                    hidden
+                    name="avatar"
+                    accept="image/*"
+                    type="file"
+                    id="avatar"
+                    onChange={handleFileInputChange}
+                  />
+                </Button>
+              </div>
+
+              {previewSource ? (
+                <>
+                  <div className="imageGridImgWrapper">
+                    <img
+                      src={previewSource}
+                      alt="selected"
+                      className="imageGridImg"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="w-fit mx-auto sm:ml-auto sm:mr-0">
+                      <ImageButtons
+                        save={handleSaveImage}
+                        cancel={handleCancelImage}
+                        count={count}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : null}
             </div>
           </div>
 
@@ -328,7 +499,7 @@ export function CreateEvent() {
           </div>
 
           {/* Contact Info */}
-          <div className="mb-10">
+          <div className="mb-8">
             <div className="mb-5">
               <h3 className="font-bold text-lg">Creator contact</h3>
               <p className="text-sm text-gray-500">
