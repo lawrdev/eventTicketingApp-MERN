@@ -1,6 +1,8 @@
 body {
   font-family: "Red Hat Display", sans-serif;
   background-color: #f8f9fa !important;
+  min-height: 100%;
+  position: relative;
 }
 @tailwind base;
 @tailwind components;
@@ -78,22 +80,32 @@ a:hover {
 }
 
 /* Profile */
+.profileWrapper {
+  width: 320px;
+}
 .profileImageWrapper {
-  @apply w-full rounded-md;
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
+  @apply absolute w-full top-0 bottom-0 left-0 right-0;
 }
 .profileImageWrapper:hover .addPhoto {
   @apply opacity-100 duration-300 ease-in-out;
 }
 .profileImgage {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
   object-fit: cover;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 .addPhoto {
   @apply flex opacity-0 absolute z-50 top-0 right-0 left-0 bottom-0 bg-slate-800 bg-opacity-50 justify-center items-center duration-300 ease-in-out;
+}
+
+/* Event Tab */
+#bud .eventTab {
+  @apply !rounded-xl !mb-2 !text-gray-400 !font-medium;
+}
+#bud .eventTab.Mui-selected {
+  @apply !bg-gray-200 !text-blue-700 duration-300 ease-in-out;
 }
 
 /* search UI */
@@ -113,4 +125,105 @@ a:hover {
 }
 .scaleDown:hover {
   transform: scale(0.99);
+}
+
+/* event Image */
+.imageGridImgWrapper {
+  @apply overflow-hidden rounded;
+}
+.imageGridImg {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* event card */
+.eventCardImageWrapper {
+  @apply overflow-hidden;
+  width: 100%;
+  height: 100%;
+}
+.eventCardImage {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+/* event preview */
+.eventPreviewCard {
+  @apply pt-1.5 pb-3 px-2 w-fit rounded-xl shadow-md cursor-pointer hover:shadow-lg select-none;
+  border: 0.5px solid #eee;
+  width: 128px;
+  height: 185px;
+}
+.previewCardImageWrapper {
+  @apply relative mb-3 w-fit rounded-xl overflow-hidden shadow-xl bg-blue-200;
+  height: 90px;
+  width: 100%;
+}
+.previewCardImage {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+/* event page */
+.eventPageImageWrapper {
+  @apply relative w-full bg-gray-400 overflow-hidden;
+  width: 100%;
+  height: 100%;
+}
+.eventPageImage {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  object-fit: cover;
+}
+.registerEvent {
+  @apply w-fit cursor-pointer;
+}
+
+/* swiper */
+.mySlider {
+  @apply p-0;
+}
+.swiper-button-prev {
+  background-image: url("./assets/icon/back.png");
+}
+.swiper-button-next {
+  background-image: url("./assets/icon/next.png");
+}
+.swiper-button-next,
+.swiper-button-prev {
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: center;
+}
+.swiper-button-next:active,
+.swiper-button-prev:active {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+.swiper-button-next:active,
+.swiper-button-prev:active {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  display: none;
 }
