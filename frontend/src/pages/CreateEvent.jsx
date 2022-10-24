@@ -29,18 +29,13 @@ const cloud_name = "dqveipmsp";
 const cloud_api_key = "245341436926946";
 
 const events = [
-  "Party or Social Gathering",
-  "Class, Training or Workshop",
-  "Screening",
-  "Meeting",
-  "Festival",
-  "Performance or Concerts",
-  "Tour",
-  "Game or Tournament",
+  "Party",
+  "Music",
+  "Comedy show",
+  "Training",
   "Conference",
-  "Playground",
-  "Private Party",
-  "VIP",
+  "Gaming",
+  "Private",
   "Other",
 ];
 
@@ -62,7 +57,7 @@ export function CreateEvent() {
 
   const [name] = useState(user?.name);
   const [email] = useState(user?.email);
-  const [event, setEvent] = useState("Class, Training or Workshop");
+  const [event, setEvent] = useState("Party");
   const [details, setDetails] = useState(detailsInitialState);
   const [eventDate, setEventDate] = useState(dayjs());
   const [isLoading, setIsLoading] = useState(false);
