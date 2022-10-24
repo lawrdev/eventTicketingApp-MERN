@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import Divider from "@mui/material/Divider";
 import { Link, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import demoIMG from "../assets/img/demo.jpg";
 import LogoutIcon from "@mui/icons-material/Logout";
-import Button from "@mui/material/Button";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
 import SearchIcon from "@mui/icons-material/Search";
@@ -39,9 +38,8 @@ function MenuList({ user, setMenuOpen }) {
 
   return (
     <Box sx={{ display: { sm: "none" } }}>
-      <div className="mb-10">
+      <div className="mb-10 pb-3 border-b-2 border-gray-300 rounded-b-lg !no-select">
         {/* search here */}
-
         <div className="px-3 py-1.5">
           <label htmlFor="search" className="relative">
             <input
@@ -59,35 +57,61 @@ function MenuList({ user, setMenuOpen }) {
 
         <div className="font-semibold">
           <ul>
-            {list.map((item, index) => (
-              <li
-                key={index}
-                className="menuListItem scaleDown"
-                onClick={() => setMenuOpen(false)}
-              >
-                <Divider />
-                <Link to="/">
-                  <p>{item}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          {user ? (
-            <div className="px-3 flex flex-col justify-between py-1 h-10 ">
+            <li
+              className="menuListItem scaleDown"
+              onClick={() => setMenuOpen(false)}
+            >
               <Divider />
-              <div
-                className="flex gap-1 cursor-pointer scaleDown"
-                onClick={onProfile}
-              >
-                <Avatar
-                  alt="profile"
-                  src={demoIMG}
-                  sx={{ width: 24, height: 24 }}
-                />
-                <p className="hover:underline">{user.name}</p>
-              </div>
+              <Link to="/">
+                <p>Home</p>
+              </Link>
+            </li>
+            <li
+              className="menuListItem scaleDown"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Divider />
+              <Link to="/create-event">
+                <p>Create an event</p>
+              </Link>
+            </li>
+            <li
+              className="menuListItem scaleDown"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Divider />
+              <Link to="/profile">
+                <p>View Profile</p>
+              </Link>
+            </li>
+            <li
+              className="menuListItem scaleDown"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Divider />
+              <Link to="/">
+                <p>About this project</p>
+              </Link>
+            </li>
+            <li className="menuListItem scaleDown !text-gray-400">
+              <Divider />
+              <p>Settings</p>
+            </li>
+          </ul>
+          <div className="px-3 flex flex-col justify-between py-1 h-10 ">
+            <Divider />
+            <div
+              className="flex gap-1 cursor-pointer scaleDown"
+              onClick={onProfile}
+            >
+              <Avatar
+                alt="profile"
+                src={demoIMG}
+                sx={{ width: 24, height: 24 }}
+              />
+              <p className="hover:underline">{user.name}</p>
             </div>
-          ) : null}
+          </div>
           <div className="px-3 flex flex-col justify-between py-1 h-10">
             <Divider />
             <p
