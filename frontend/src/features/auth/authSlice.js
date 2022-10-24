@@ -33,8 +33,24 @@ export const register = createAsyncThunk('auth/register',
 export const login = createAsyncThunk('auth/login',
     async (user, thunkAPI) => {
         try {
-            // verify user from server and return data
             return authService.login(user)
+        } catch (error) {
+            const message = (
+                error.message &&
+                error.response.data &&
+                error.response.data.message) ||
+                error.message || error.toString();
+
+            return thunkAPI.rejectWithValue(message)
+        }
+    })
+
+// Update User
+export const updateUser = createAsyncThunk('auth/update',
+    async (userData, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return authService.updateUser(userData, token)
         } catch (error) {
             const message = (
                 error.message &&
@@ -78,6 +94,9 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.user = action.payload
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
