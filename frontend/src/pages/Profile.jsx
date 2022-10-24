@@ -1,37 +1,51 @@
 import { useState, useEffect } from "react";
 import { usePrivateRoute } from "../hooks/usePrivateRoute";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { updateUser, logout, reset } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import { Header } from "../components/Header";
 import Spinner from "../components/Spinner";
 import TextField from "@mui/material/TextField";
 import DemoIMG from "../assets/img/demo.jpg";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import Divider from "@mui/material/Divider";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import { getEvents } from "../features/event/eventSlice";
-import { snack, resetSnackbar } from "../features/global/globalSlice";
-import EventsCard from "../components/EventsCard";
+import { snack } from "../features/global/globalSlice";
+import BackButton from "../components/BackButton";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import Tooltip from "@mui/material/Tooltip";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import CircularProgress from "@mui/material/CircularProgress";
 
-const initialState = {
-  user: {},
-  events: [],
-};
+import Avatar from "@mui/material/Avatar";
+import EventStatusTabs from "../components/EventStatusTabs";
+
+// cloudinary keys
+const cloud_name = "dqveipmsp";
+const cloud_api_key = "245341436926946";
 
 export function Profile() {
+  // PRIVATE
   usePrivateRoute();
   const { user } = useSelector((state) => state.auth);
   const { events } = useSelector((state) => state.event);
-  const { formData, setformData } = useState({});
+  const [formData, setFormData] = useState({});
+  const [uploading, setUploading] = useState(false);
+  const [menu, setMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // GET EVENTS
   useEffect(() => {
     dispatch(getEvents())
       .unwrap()
@@ -41,71 +55,232 @@ export function Profile() {
       })
       .catch((error) => {
         setIsLoading(false);
-        dispatch(snack(error));
+        dispatch(snack("Error fetching events, please try again"));
       });
   }, [dispatch]);
+
+  //  Set User Info
+  useEffect(() => {
+    let obj = {};
+    if (user) {
+      obj = {
+        name: user.name,
+        email: user.email,
+        profile: {
+          phone: user.profile?.phone,
+          work: user.profile?.work,
+          website: user.profile?.website,
+        },
+      };
+      setFormData(obj);
+    }
+  }, [user]);
 
   const onCancel = () => {
     setIsEdit(false);
   };
 
+  const onLogout = () => {
+    dispatch(logout());
+    dispatch(reset());
+
+    setMenu(false);
+
+    navigate("/");
+  };
+
+  // Profile Picture Change
+  const handleProfilePicture = (e) => {
+    setUploading(true);
+    const file = e.target.files[0];
+
+    if (file) {
+      uploadImage(file).then((feedback) => {
+        const { data } = feedback;
+        const eventData = { img: data.img_id };
+        dispatch(updateUser(eventData))
+          .unwrap()
+          .then(() => {
+            setUploading(false);
+          });
+      });
+    } else {
+      setUploading(false);
+    }
+  };
+  // upload file to cloudinary
+  const uploadImage = async (image) => {
+    // get signature
+    const signatureResponse = await axios.get("/get-signature");
+
+    // set data to upload to cloudinary
+    const data = new FormData();
+    data.append("file", image);
+    data.append("api_key", cloud_api_key);
+    data.append("signature", signatureResponse.data.signature);
+    data.append("timestamp", signatureResponse.data.timestamp);
+
+    // send the image to cloudinary
+    const cloudinaryResponse = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloud_name}/upload`,
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: function (e) {
+          // setCount(e.loaded / e.total);
+        },
+      }
+    );
+    // console.log(cloudinaryResponse.data);
+
+    // after upload, check image info with cloudinary
+    const photoData = {
+      public_id: cloudinaryResponse.data.public_id,
+      version: cloudinaryResponse.data.version,
+      signature: cloudinaryResponse.data.signature,
+    };
+
+    const feedback = await axios.post("/image-info", photoData);
+
+    return feedback;
+  };
+
+  // on change for inputs
+  const onMutate = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+  const onChange = (e) => {
+    let obj = {
+      [e.target.id]: e.target.value,
+    };
+
+    setFormData((prevState) => ({
+      ...prevState,
+      profile: { ...formData.profile, ...obj },
+    }));
+  };
+
+  // on edit profile submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    dispatch(updateUser(formData))
+      .unwrap()
+      .then(() => {
+        setIsSaving(false);
+        setIsEdit(false);
+        dispatch(snack("Profile Updated"));
+      })
+      .catch((error) => {
+        setIsSaving(false);
+        dispatch(snack(error));
+      });
+  };
+
   if (isLoading) return <Spinner />;
+
+  // FIX PROFILE LOOK
 
   return (
     <>
-      <section className="mt-8 mb-5 text-center text-lg font-bold">
-        <h3> My Profile</h3>
+      <Header />
+      <section className="relative">
+        <div className="mt-2 mb-8 flex justify-between items-center ">
+          <BackButton />
+          <IconButton
+            aria-label="more options"
+            component="label"
+            onClick={() => setMenu(!menu)}
+          >
+            {menu ? <CloseOutlinedIcon /> : <MoreHorizIcon />}
+          </IconButton>
+        </div>
+        {menu ? (
+          <div className="shadow-lg absolute top-full right-0 py-2 px-3 border-2 border-gray-200">
+            <p
+              className="hover:text-red-600 flex gap-2 items-center w-fit pr-2 duration-300 ease-in-out cursor-pointer text-sm"
+              onClick={onLogout}
+            >
+              <LogoutIcon fontSize="small" />
+              <span>Sign out</span>
+            </p>
+          </div>
+        ) : null}
       </section>
 
-      <Stack spacing={3} direction={{ direction: "column", sm: "row" }}>
-        <section>
-          <div>
-            <form autoComplete="off">
-              <Stack spacing={2} direction="column">
-                {/* profile pic */}
-                <div className="mb-3 w-full max-w-xs mx-auto">
-                  <div className="relative overflow-hidden w-fit mx-auto">
-                    <div className="profileImageWrapper">
-                      <img
-                        src={DemoIMG}
-                        alt="profile"
-                        className="profileImgage"
-                      />
-                      <div className="addPhoto">
-                        <IconButton
-                          className="bg-opacity-100 !text-white hover:!text-gray-300"
-                          color="inherit"
-                          aria-label="upload picture"
-                          component="label"
-                        >
-                          <input hidden accept="image/*" type="file" />
-                          <PhotoCamera fontSize="large" />
-                        </IconButton>
-                      </div>
-                    </div>
+      {/* PROFILE */}
+      <section className="mb-10 w-full" style={{ minWidth: 280 }}>
+        <div>
+          <Stack spacing={2} direction="column">
+            {/* profile pic */}
+            <div className="mb-1">
+              <div className="w-fit mx-auto relative">
+                {uploading && (
+                  <div className="absolute bg-black bg-opacity-50 top-0 left-0 right-0 bottom-0 z-10 rounded-full flex justify-center items-center text-white">
+                    <CircularProgress color="inherit" />
                   </div>
-
-                  <div>
-                    <p className="font-semibold text-lg">{user.name}</p>
-                    <p>{user.email}</p>
-                  </div>
-
-                  <div className="my-2">
-                    <Button
-                      className="!rounded-3xl !border-2"
-                      fullWidth
-                      disableElevation
-                      variant="outlined"
-                      onClick={() => {
-                        setIsEdit(true);
-                      }}
-                    >
-                      Edit Profile
-                    </Button>
-                  </div>
+                )}
+                <Avatar
+                  alt="Profile Avi"
+                  // src={DemoIMG}
+                  src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_180,h_180,c_fill,q_100/${user?.img}.jpg`}
+                  sx={{ width: 160, height: 160 }}
+                />
+                <div className="absolute bottom-2 right-1 z-50">
+                  <IconButton
+                    className="!bg-white !bg-opacity-90"
+                    color="inherit"
+                    aria-label="upload picture"
+                    component="label"
+                  >
+                    <input
+                      hidden
+                      id="profileAvatar"
+                      accept="image/*"
+                      type="file"
+                      onChange={handleProfilePicture}
+                    />
+                    <PhotoCamera />
+                  </IconButton>
                 </div>
+              </div>
 
-                {isEdit ? (
+              <div className="text-center mt-2 mb-3">
+                <p className="font-bold text-2xl">{user.name}</p>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+
+              <div className="flex gap-2 justify-center">
+                <Button
+                  className="!rounded-lg !normal-case !px-8"
+                  disableElevation
+                  variant="contained"
+                  onClick={() => {
+                    setIsEdit(true);
+                  }}
+                >
+                  Edit Profile
+                </Button>
+                <Button
+                  className="!rounded-lg !bg-gray-300 !text-gray-500"
+                  disableElevation
+                  variant="contained"
+                  onClick={() => navigate("/create-event")}
+                >
+                  <Tooltip title="Create an Event">
+                    <AddCircleOutlineOutlinedIcon />
+                  </Tooltip>
+                </Button>
+              </div>
+            </div>
+
+            {isEdit ? (
+              <>
+                <form autoComplete="off" onSubmit={handleSubmit}>
                   <div className="w-full">
                     <div className="mb-2">
                       <label
@@ -116,12 +291,12 @@ export function Profile() {
                       </label>
                       <TextField
                         hiddenLabel
-                        disabled
                         fullWidth
                         size="small"
                         id="name"
                         variant="outlined"
-                        value={user.name}
+                        value={formData.name}
+                        onChange={onMutate}
                       />
                     </div>
 
@@ -136,10 +311,12 @@ export function Profile() {
                         hiddenLabel
                         disabled
                         fullWidth
+                        className="bg-gray-100"
                         size="small"
                         id="email"
                         variant="outlined"
-                        value={user.email}
+                        value={formData.email}
+                        onChange={onMutate}
                       />
                     </div>
 
@@ -152,12 +329,14 @@ export function Profile() {
                       </label>
                       <TextField
                         hiddenLabel
-                        disabled
                         fullWidth
                         size="small"
                         id="phone"
                         variant="outlined"
-                        value={user.phone}
+                        value={
+                          formData.profile.phone ? formData.profile.phone : ""
+                        }
+                        onChange={onChange}
                       />
                     </div>
 
@@ -170,16 +349,18 @@ export function Profile() {
                       </label>
                       <TextField
                         hiddenLabel
-                        disabled
                         fullWidth
                         size="small"
-                        id="company"
+                        id="work"
                         variant="outlined"
-                        value={user.Profile?.company}
+                        value={
+                          formData.profile.work ? formData.profile.work : ""
+                        }
+                        onChange={onChange}
                       />
                     </div>
 
-                    <div className="mb-5">
+                    <div className="mb-3">
                       <label
                         htmlFor="website"
                         className="text-sm font-semibold block pb-1"
@@ -188,49 +369,57 @@ export function Profile() {
                       </label>
                       <TextField
                         hiddenLabel
-                        disabled
                         fullWidth
                         size="small"
                         id="website"
                         variant="outlined"
-                        value={user.Profile?.website}
+                        value={
+                          formData.profile.website
+                            ? formData.profile.website
+                            : ""
+                        }
+                        onChange={onChange}
                       />
                     </div>
 
                     <div>
                       <div className="w-fit mx-auto sm:ml-auto sm:mr-0">
-                        <Stack spacing={2} direction="row">
-                          <Button variant="contained">Submit</Button>
-                          <Button variant="outlined" onClick={onCancel}>
+                        <Stack spacing={1} direction="row">
+                          <Button
+                            disableElevation
+                            size="small"
+                            variant="contained"
+                            type="submit"
+                            disabled={isSaving}
+                          >
+                            Submit
+                          </Button>
+                          <Button
+                            disableElevation
+                            size="small"
+                            variant="outlined"
+                            disabled={isSaving}
+                            onClick={onCancel}
+                          >
                             Cancel
                           </Button>
                         </Stack>
                       </div>
                     </div>
                   </div>
-                ) : null}
-              </Stack>
-            </form>
-          </div>
-        </section>
+                </form>
+              </>
+            ) : null}
+          </Stack>
+        </div>
+      </section>
 
-        <section className="flex-grow" style={{ minWidth: 280 }}>
-          <div className=" flex-grow text-center">
-            <div className="mb-4">
-              <h3 className="pb-2">YOUR EVENTS</h3>
-              <Divider />
-            </div>
-
-            <ul>
-              {events?.map((item, index) => (
-                <li key={index} className="mb-5">
-                  <EventsCard event={item} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      </Stack>
+      {/* EVENTS */}
+      <section style={{ minWidth: 200 }}>
+        <div className="mb-5">
+          {events && <EventStatusTabs events={events} />}
+        </div>
+      </section>
     </>
   );
 }
