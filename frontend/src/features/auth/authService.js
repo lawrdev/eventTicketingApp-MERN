@@ -27,10 +27,27 @@ const login = async (userData) => {
     return res.data
 }
 
+// Update user
+const updateUser = async (userData, token) => {
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }
+    const res = await axios.put(`${API_URL}/update`, userData, config)
+
+    if (res.data) {
+        // store data in localStorage
+        localStorage.setItem('user', JSON.stringify(res.data))
+    }
+    return res.data
+}
+
 // Logout User
 const logout = () => localStorage.removeItem('user')
 
 // set authService to an obj containing the funcs and export
-const authService = { register, logout, login }
+const authService = { register, logout, login, updateUser }
 
 export default authService
