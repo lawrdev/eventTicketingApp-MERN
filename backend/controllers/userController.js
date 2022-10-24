@@ -7,7 +7,7 @@ const User = require('../models/userModel')
 
 // @desc    Register new user
 // @route   /api/users/register
-// @access  Pubkic
+// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body
 
@@ -44,6 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            img: user.img,
             profile: {},
             token: generateToken(user._id)
         })
@@ -55,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 // @desc    Login a user
 // @route   /api/users/login
-// @access  Pubkic
+// @access  Public
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
@@ -68,6 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            img: user.img,
             profile: user.profile,
             token: generateToken(user._id)
         })
@@ -82,12 +84,52 @@ const loginUser = asyncHandler(async (req, res) => {
 // @desc    get current user
 // @route   /api/users/me
 // @access  Private
+const updateUser = asyncHandler(async (req, res) => {
+
+    const { name, email, img, profile } = req.body
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+        res.status(404)
+        throw new Error('User not found')
+    }
+
+    // update user
+    if (name) {
+        user.name = name
+    }
+    if (email) {
+        user.email = email
+    }
+    if (img) {
+        user.img = img
+    }
+    if (profile) {
+        user.profile = { ...user.profile, ...profile }
+    }
+
+    await user.save()
+
+    res.status(200).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        img: user.img,
+        profile: user.profile,
+        token: generateToken(user._id)
+    })
+})
+
+// @desc    get current user
+// @route   /api/users/me
+// @access  Private
 const getMe = asyncHandler(async (req, res) => {
 
     const user = {
         id: req.user._id,
         email: req.user.email,
-        name: req.user.name
+        name: req.user.name,
+        img: req.user.img
     }
 
     // this should send back the user's info without password
@@ -109,5 +151,6 @@ const generateToken = (id) => {
 module.exports = {
     registerUser,
     loginUser,
+    updateUser,
     getMe
 }
