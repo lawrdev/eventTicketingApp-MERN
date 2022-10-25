@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router()
 const {
     getEvents,
-    getEvent,
     createEvent,
-    updateEvent,
-    deleteEvent
+    eventUpdates,
+    deleteEvent,
 } = require('../controllers/eventController')
 
 // 'protect' middleware for routes
@@ -16,9 +15,7 @@ router.route('/').get(protect, getEvents).post(protect, createEvent)
 
 router
     .route('/:id')
-    .get(protect, getEvent)
     .delete(protect, deleteEvent)
-    .put(protect, updateEvent)
-
+    .put(protect, eventUpdates)
 
 module.exports = router
