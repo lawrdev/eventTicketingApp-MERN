@@ -67,12 +67,13 @@ export default function EventStatusTab({ events }) {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ borderBottom: 1, mb: 2, borderColor: "divider" }}>
         <Tabs
           centered
+          textColor="secondary"
+          indicatorColor="secondary"
           value={value}
           onChange={handleChange}
-          indicatorColor="none"
           aria-label="event status"
         >
           <Tab className="eventTab" label="Upcoming" {...a11yProps(0)} />

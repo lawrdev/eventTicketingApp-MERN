@@ -51,7 +51,7 @@ function EventPreview({ event }) {
             <p className="mb-2 font-bold text-sm">{event.details.title}</p>
             <p className="text-gray-400 text-xs flex items-center gap-1 uppercase">
               {/* <CalendarMonthOutlinedIcon fontSize="small" /> */}
-              <span className="font-bold text-purple-500">
+              <span className="font-bold text-yellow-500">
                 {dayjs(event.details.date).format("MMM")}
               </span>{" "}
               <span className="font-bold">
