@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler')
 
-// NOTE: no need to get the user, we already have them on req object from
-// protect middleware. The protect middleware already checks for valid user.
+// NOTE: no need to get the user, we already have them on req object from protect middleware.
+// The protect middleware already checks for valid user.
+
 const Event = require('../models/eventModel')
 
 // @desc    get user events
@@ -14,27 +15,52 @@ const getEvents = asyncHandler(async (req, res) => {
 
     res.status(200).json(events)
 })
+// @desc    get events by SEARCH
+// @route   GET /api/events
+// @access  Private
+const getSearchEvents = asyncHandler(async (req, res) => {
 
+    const { searchValue } = req.body
+    // assign evens related to user
+    const events = await Event.find(
+        {
+            'details.title': {
+                "$regex": searchValue,
+                "$options": "i"
+            }
+        })
+    // { 'details.title': searchValue }
+    if (!events) {
+        res.status(200).json({ mssg: none })
+    }
+
+    res.status(200).json(events)
+})
+// @desc    get ALL events
+// @route   GET /api/events
+// @access  Public
+const getAllEvents = asyncHandler(async (req, res) => {
+
+    // assign evens related to user
+    const events = await Event.find({})
+
+    res.status(200).json(events)
+})
 // @desc    get single user event
 // @route   GET /api/events/:id
-// @access  Private
+// @access  Public
 const getEvent = asyncHandler(async (req, res) => {
 
-    // to get an event, we use id, inside params, that is inside the req URL
-    const event = await Event.findById(req.params.id)
+    const { id } = req.params
+    const event = await Event.findById(id)
     if (!event) {
         res.status(404)
         throw new Error('Events not found')
     }
 
-    // limit who can get an event to only owners of the event
-    if (event.user.toString() !== req.user.id) {
-        res.status(401)
-        throw new Error('Not Authorized')
-    }
-
     res.status(200).json(event)
 })
+
 
 // @desc    create newEvents
 // @route   POST /api/events
@@ -53,20 +79,21 @@ const createEvent = asyncHandler(async (req, res) => {
         eventType,
         details,
         user: req.user.id,
-        status: 'upcoming'
+        status: 'Upcoming'
     })
 
     res.status(201).json(event)
 })
-
 
 // @desc    delete event
 // @route   DELETE /api/events/:id
 // @access  Private
 const deleteEvent = asyncHandler(async (req, res) => {
 
-    // to get event, we use id, inside params, that is inside the req URL
-    const event = await Event.findById(req.params.id)
+    const { id } = req.params
+    const event = await Event.findById(id)
+    // const event = await Event.findById(req.params.id)
+
     if (!event) {
         res.status(404)
         throw new Error('Event not found')
@@ -78,50 +105,63 @@ const deleteEvent = asyncHandler(async (req, res) => {
         throw new Error('Not Authorized')
     }
 
-    // this function tells to model to delete this event
+    // delete this event
     await event.remove()
 
-    res.status(200).json({ success: true })
+    res.status(200).json('done')
+    // res.status(200).json({ success: true })
 })
 
-// @desc    update event
+// @desc    EVENT UPDATES [ book, unbook]
 // @route   PUT /api/events/:id
 // @access  Private
-const updateEvent = asyncHandler(async (req, res) => {
+const eventUpdates = asyncHandler(async (req, res) => {
 
-    // to get event, we use id, inside params, that is inside the req URL
-    const event = await Event.findById(req.params.id)
-    if (!event) {
-        res.status(404)
-        throw new Error('Event not found')
+    const { userId, task } = req.body
+
+    if (task === 'book') {
+        const event = await Event.findById(req.params.id)
+        if (!event) {
+            res.status(404)
+            throw new Error('Event not found')
+        }
+
+        // book event
+        const arr = event.ticket.members;
+        const checkArr = arr.find(element => element == req.user.id)
+        if (checkArr) {
+            res.status(200).json(event)
+        } else {
+            event.ticket.members.push(req.user.id)
+            await event.save()
+        }
+
+    } else if (task === 'unbook') {
+        let event = await Event.findById(req.params.id)
+        if (!event) {
+            res.status(404)
+            throw new Error('Event not found')
+        }
+
+        // unbook event
+        let arr = event.ticket.members;
+        let filteredArr = arr.filter(element => element !== req.user.id)
+
+        event.ticket.members = filteredArr
+
+        await event.save()
+        res.status(200).json(event)
     }
 
-    // limit who can get an event to only owner of the event
-    if (event.user.toString() !== req.user.id) {
-        res.status(401)
-        throw new Error('Not Authorized')
-    }
-
-    // update event
-    const updatedEvent = await Event.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-    )
-
-    // '.findIdAndUpdate' takes 3 parameters
-    // 'req.params.id' the event's id to find and update, because it's coming from the url
-    // 'req.body' containing the update details('event' and 'details')
-    // an options object, 'new: true' means if event does not exist, create a new one
-
-    res.status(200).json(updatedEvent)
 })
 
 
 module.exports = {
     getEvents,
+    getSearchEvents,
     getEvent,
     createEvent,
-    updateEvent,
-    deleteEvent
+    eventUpdates,
+    deleteEvent,
+    getAllEvents
 }
