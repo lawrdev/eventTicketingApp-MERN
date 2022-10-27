@@ -63,7 +63,7 @@ export function Login() {
   };
 
   return (
-    <>
+    <div className="px-3 sm:px-6">
       <Header />
       <section className="text-center my-6">
         <div>
@@ -149,6 +149,6 @@ export function Login() {
           </div>
         </form>
       </section>
-    </>
+    </div>
   );
 }
