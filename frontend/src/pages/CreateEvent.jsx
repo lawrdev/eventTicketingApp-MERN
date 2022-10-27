@@ -23,6 +23,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import BackButton from "../components/BackButton";
 import ImageButtons from "../components/ImageButtons";
+import AppButton from "../components/AppButton";
 
 // cloudinary keys
 const cloud_name = "dqveipmsp";
@@ -216,9 +217,11 @@ export function CreateEvent() {
   if (isLoading) return <Spinner />;
 
   return (
-    <>
+    <div className="px-3 sm:px-6">
+      <div className="mt-3" />
       <BackButton />
-      <section className="text-center mb-4 mt-2">
+
+      <section className="text-center mb-4 mt-4">
         <h1 className="font-bold text-xl">Create New Event</h1>
         <p>Please fill out the form below</p>
       </section>
@@ -350,6 +353,7 @@ export function CreateEvent() {
               <div className="mb-4">
                 <Button
                   disableElevation
+                  color="secondary"
                   size="small"
                   variant="outlined"
                   component="label"
@@ -570,12 +574,18 @@ export function CreateEvent() {
           </div>
 
           <div className="max-w-lg mx-auto mb-8">
-            <Button type="submit" fullWidth variant="contained">
+            <AppButton
+              text="Submit"
+              type="submit"
+              className="w-full py-3 font-bold"
+            />
+
+            {/* <Button color="purple" type="submit" fullWidth variant="contained">
               Create Event
-            </Button>
+            </Button> */}
           </div>
         </form>
       </section>
-    </>
+    </div>
   );
 }
