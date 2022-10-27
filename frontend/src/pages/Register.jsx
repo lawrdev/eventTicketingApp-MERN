@@ -73,7 +73,7 @@ export function Register() {
   };
 
   return (
-    <>
+    <div className="px-3 sm:px-6">
       <Header />
       <section className="text-center my-6">
         <div>
@@ -179,6 +179,6 @@ export function Register() {
           </div>
         </form>
       </section>
-    </>
+    </div>
   );
 }
