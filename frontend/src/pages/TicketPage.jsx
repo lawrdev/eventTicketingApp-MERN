@@ -41,7 +41,7 @@ function BookEvent() {
   if (loading) return <Spinner />;
 
   return (
-    <>
+    <div className="px-3 sm:px-6">
       <div className="flex justify-between items-center">
         <BackButton />
         <h3 className="pt-5 pb-4 font-semibold text-xl tracking-wider text-center text-gray-900">
@@ -70,7 +70,7 @@ function BookEvent() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
