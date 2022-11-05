@@ -120,6 +120,28 @@ const updateUser = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc    get event's creator
+// @route   /api/users/me
+// @access  Public
+const getCreator = asyncHandler(async (req, res) => {
+
+    const { uid } = req.params
+    const user = await User.findById(uid)
+
+    if (!user) {
+        res.status(404)
+        throw new Error('User not found')
+    }
+
+    const creator = {
+        id: user._id,
+        img: user.img,
+        name: user.name,
+    }
+
+    res.status(200).json(creator)
+})
+
 // @desc    get current user
 // @route   /api/users/me
 // @access  Private
@@ -152,5 +174,6 @@ module.exports = {
     registerUser,
     loginUser,
     updateUser,
+    getCreator,
     getMe
 }

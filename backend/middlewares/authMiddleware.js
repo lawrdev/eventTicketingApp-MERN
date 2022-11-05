@@ -29,7 +29,7 @@ const protect = asyncHandler(async (req, res, next) => {
             // FIX: check if user was found before calling 'next()'
             if (!req.user) {
                 res.status(401)
-                throw new Error('Not authorized')
+                throw new Error('user not found')
             }
             next()
 
@@ -43,7 +43,7 @@ const protect = asyncHandler(async (req, res, next) => {
     // check if no token
     if (!token) {
         res.status(401)
-        throw new Error('not authorized')
+        throw new Error('you\'re not authorized -tk')
     }
 })
 
