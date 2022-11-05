@@ -1,9 +1,13 @@
 const asyncHandler = require('express-async-handler')
+const dayjs = require('dayjs')
 
-// NOTE: no need to get the user, we already have them on req object from protect middleware.
+// NOTE: no need to get the user, we already have that on req object from protect middleware.
 // The protect middleware already checks for valid user.
 
+
 const Event = require('../models/eventModel')
+const today = dayjs()
+const todayTimestamp = today.valueOf()
 
 // @desc    get user events
 // @route   GET /api/events
@@ -15,37 +19,80 @@ const getEvents = asyncHandler(async (req, res) => {
 
     res.status(200).json(events)
 })
+
 // @desc    get events by SEARCH
-// @route   GET /api/events
-// @access  Private
+// @route   GET /public/events/search
+// @access  Public
 const getSearchEvents = asyncHandler(async (req, res) => {
 
-    const { searchValue } = req.body
-    // assign evens related to user
+    const { q } = req.params
     const events = await Event.find(
         {
             'details.title': {
-                "$regex": searchValue,
+                "$regex": q,
                 "$options": "i"
             }
         })
-    // { 'details.title': searchValue }
     if (!events) {
-        res.status(200).json({ mssg: none })
+        res.status(200).json({ mssg: 'No matching event' })
     }
 
     res.status(200).json(events)
 })
+
 // @desc    get ALL events
-// @route   GET /api/events
+// @route   GET /public/events
 // @access  Public
 const getAllEvents = asyncHandler(async (req, res) => {
 
-    // assign evens related to user
-    const events = await Event.find({})
+    const { last_id } = req.body
+    const docCount = await Event.countDocuments({})
+    let events;
 
-    res.status(200).json(events)
+    // for load more
+    if (last_id) {
+        events = await Event
+            .find({ _id: { $lt: last_id } })
+            .sort({ _id: -1 })
+            .limit(4)
+    } else {
+        events = await Event
+            .find({}) // 'details.date': { $gte: last_id }
+            .sort({ _id: -1 })
+            .limit(4)
+    }
+
+
+    let lastEventId = ''
+    if (events) {
+
+        // Update status
+        events.forEach(async (item) => {
+
+            const eventDate = dayjs(item.details.date)
+            const dayCount = eventDate.diff(today, 'day')
+
+            if (dayCount < 0) {
+                item.status = 'Closed'
+            } else if ((dayCount >= 0) && (dayCount < 8)) {
+                item.status = 'Happening'
+            } else {
+                item.status = 'Upcoming'
+            }
+
+            await item.save()
+        })
+
+        // get id of last event
+        let lastItem = events.length - 1
+        lastEventId = events[lastItem]._id
+    }
+
+    res.status(200).json({ events: events, lastId: lastEventId, length: docCount })
+
+    // IN FRONTEND, SET A COUNT THAT MULTIPLIES ON EACH REQ TO CHECK IF THE PRODUCT IS = TO THE DOCCOUNT RETURNED FROM THE REQ, IF YES, DISABLE BTN
 })
+
 // @desc    get single user event
 // @route   GET /api/events/:id
 // @access  Public
@@ -67,15 +114,16 @@ const getEvent = asyncHandler(async (req, res) => {
 // @access  Private
 const createEvent = asyncHandler(async (req, res) => {
 
-    const { eventType, details } = req.body
+    const { eventDate, eventType, details } = req.body
 
-    if (!eventType || !details) {
+    if (!eventType || !details || !eventDate) {
         res.status(400)
-        throw new Error('Please provide eventType and details')
+        throw new Error('Please include all fields and provide a date')
     }
 
     // create event
     const event = await Event.create({
+        eventDate,
         eventType,
         details,
         user: req.user.id,

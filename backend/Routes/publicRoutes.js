@@ -6,11 +6,13 @@ const {
     getSearchEvents,
     getEvent,
 } = require('../controllers/eventController')
-
+const { getCreator } = require('../controllers/userController')
 
 router.route('/').get(getAllEvents)
 
-router.route('/search').get(getSearchEvents)
+router.route('/creator/:uid').get(getCreator)
+
+router.route('/search/:q').get(getSearchEvents)
 
 router.route('/:id').get(getEvent)
 
