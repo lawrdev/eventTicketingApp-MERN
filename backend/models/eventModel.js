@@ -10,15 +10,27 @@ const eventSchema = mongoose.Schema({
         // to show which collection 'ObjectId' refers to = 'Users'
         ref: 'User'
     },
+    ticket: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            auto: true,
+        },
+        members: [String]
+    },
     eventType: {
         type: String,
         required: [true, 'Please select an event type'],
         // specific events tickets can be created for
-        enum: ['Party or Social Gathering', 'Class, Training or Workshop', 'Screening', 'Meeting', 'Festival', 'Performance or Concerts', 'Tour', 'Game or Tournament', 'Conference', 'Playground', 'Private Party', 'VIP', 'Other'],
+        enum: ['Party', 'Meeting', 'Virtual', 'Music', 'Comedy show', 'Training', 'Conference', 'Gaming', 'Private', 'Other'],
     },
     details: {
         type: Object,
         required: [true, 'Please include all necessary details for this event']
+    },
+    eventDate: {
+        type: Number,
+        required: [true, 'Please include an eventDate']
     },
     status: {
         type: String,
