@@ -11,13 +11,15 @@ const PORT = process.env.PORT || 5000
 connectDB()
 
 const app = express()
-// allow data
+// get POST body data in Express
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: false }))
 
 // Routes
 app.use('/api/users', require('./Routes/userRoutes'))
 app.use('/api/events', require('./Routes/eventRoutes'))
+
+app.use('/public/events', require('./Routes/publicRoutes'))
 
 // cloudinary
 app.get("/get-signature", (req, res) => {
@@ -29,7 +31,6 @@ app.get("/get-signature", (req, res) => {
 
     res.json({ timestamp, signature })
 })
-
 app.post("/image-info", async (req, res) => {
     // based on the public_id and the version that the (potentially malicious) user is submitting...
     // cloudinary func that checks the returned version and public_id against our hidden api secret and returns an expected signature
