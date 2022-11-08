@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
-import AppButton from "../components/AppButton";
-import Button from "@mui/material/Button";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import ViewDayOutlinedIcon from "@mui/icons-material/ViewDayOutlined";
 import EventPreview from "../components/EventPreview";
-import { useSelector, useDispatch } from "react-redux";
-import { getEvents, getAllEvents } from "../features/event/eventSlice";
+import EventCard from "../components/EventCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllEvents } from "../features/event/eventSlice";
 import { snack } from "../features/global/globalSlice";
 import Spinner from "../components/Spinner";
 import LiquorOutlinedIcon from "@mui/icons-material/LiquorOutlined";
@@ -18,7 +15,12 @@ import Groups2OutlinedIcon from "@mui/icons-material/Groups2Outlined";
 import GamepadOutlinedIcon from "@mui/icons-material/GamepadOutlined";
 import MailLockOutlinedIcon from "@mui/icons-material/MailLockOutlined";
 import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
-
+import FlareOutlinedIcon from "@mui/icons-material/FlareOutlined";
+import NoiseAwareOutlinedIcon from "@mui/icons-material/NoiseAwareOutlined";
+import RocketLaunchOutlinedIcon from "@mui/icons-material/RocketLaunchOutlined";
+import ImageSearchOutlinedIcon from "@mui/icons-material/ImageSearchOutlined";
+import Button from "@mui/material/Button";
+import Footer from "../components/Footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
@@ -66,37 +68,72 @@ const categories = [
 ];
 
 export function Home() {
-  const { user } = useSelector((state) => state.auth);
-  const { publicEvents } = useSelector((state) => state.event);
   const [loading, setLoading] = useState(true);
-  const [isUser, setIsUser] = useState(false);
+  const [thisWeek, setThisWeek] = useState(null);
+  const [upcoming, setUpcoming] = useState(null);
+  const [eventData, setEventData] = useState(null);
+
+  const { lastEventDate, eventsLength } = useSelector((state) => state.event);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // GET ALL EVENTS - [public]
+  // GET ALL EVENTS - [public, 3]
   useEffect(() => {
-    dispatch(getAllEvents())
+    let today = Math.floor(Date.now() / 1000);
+
+    dispatch(getAllEvents(today))
       .unwrap()
-      .then(() => {
+      .then((data) => {
+        setEventData(data.events);
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
-        dispatch(snack("Error please try again"));
+        dispatch(snack(error)); //"Error please try again"
       });
   }, [dispatch]);
 
-  //  CHECK IF USER
+  // set upcoming && thisWeek's events
   useEffect(() => {
-    if (user) {
-      setIsUser(true);
-    } else {
-      setIsUser(false);
-    }
-  }, [user]);
+    let arr1 = [];
+    let arr2 = [];
+    if (eventData) {
+      eventData.forEach((item) => {
+        if (item.status === "Happening") {
+          arr1.push(item);
+        }
+        if (item.status === "Upcoming") {
+          arr2.push(item);
+        }
+      });
 
-  if (loading) return <Spinner />;
+      if (arr1.length > 0) {
+        setThisWeek(arr1);
+      }
+      if (arr2.length > 0) {
+        setUpcoming(arr2);
+      }
+    }
+  }, [eventData]);
+
+  // generate random number within "thisWeeks's" length
+  function randomNumber(length) {
+    return Math.floor(Math.random() * (length - 0) + 0);
+  }
+
+  function loadMoreEvents(tm) {
+    dispatch(getAllEvents(tm))
+      .unwrap()
+      .then((data) => {
+        setEventData((prev) => [...prev, ...data.events]);
+      })
+      .catch((error) => {
+        dispatch(snack(error)); //"Error please try again"
+      });
+  }
+
+  if (loading || !eventData) return <Spinner />;
 
   return (
     <>
@@ -115,15 +152,20 @@ export function Home() {
           </div>
 
           <div className="absolute left-0 top-1/2 -translate-y-1/2 max-w-sm text-white px-4">
-            <h3 className="text-lg sm:text-xl font-bold mb-1">
+            <h3 className="text-xl sm:text-xl font-bold mb-1">
               EventTicketing
             </h3>
-            <p className="text-xs opacity-80 sm:text-sm mb-3 sm:mb-5">
+            <p className="text-sm opacity-70 sm:text-sm mb-3 sm:mb-5">
               Let's you take your meetings, parties, music events, conferences
               and other events to the next level
             </p>
 
-            <button className="homeBtn opacity-90">Create an event</button>
+            <button
+              className="homeBtn"
+              onClick={() => navigate("/create-event")}
+            >
+              Create an event
+            </button>
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 mb-2 px-3">
@@ -134,71 +176,12 @@ export function Home() {
         </div>
       </section>
 
-      <div className="px-3 ">
-        {/* <section className="mt-5 mb-8">
-          <div className="introWrapper ">
-            <div className="w-full">
-              <p className="text-sm text-gray-500 mb-4 max-w-xs">
-                <span className="font-bold">
-                  <span className="text-yellow-500">PARTY</span>JOLLOF
-                </span>{" "}
-                is a web app that let's you take your meetings, parties, music
-                events, conferences and other events to the next level with
-                deeper, richer engagement for all participants with real-time
-                communication and seamless updates
-                Plus, it has been
-              created with insight by people who understand the group experience 
-              </p>
-
-              <AppButton
-                text="Create a new event"
-                onClick={() => navigate("/create-event")}
-                className="py-3 px-6 "
-              />
-            </div>
-
-            <div
-              className="max-w-xs mx-auto w-full overflow-hidden"
-              style={{ minWidth: 220 }}
-            >
-              <img
-                alt="event"
-                src={`https://res.cloudinary.com/dqveipmsp/image/upload/v1666633192/Open_Figures_-_3_Characters_awm0kx.png`}
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          </div>
-        </section> */}
-
-        <section className="mb-5">
+      <div className="mb-32 px-3">
+        <section className="mb-6">
           <div>
-            <h3 className="mb-3 font-bold text-lg">Explore</h3>
-
-            <div>
-              <Swiper
-                slidesPerView={"auto"}
-                spaceBetween={12}
-                navigation={false}
-                modules={[Navigation]}
-                // FIX STRETCH ISSUE
-                className="!pt-1 !pb-4"
-              >
-                {publicEvents?.map((item, index) => (
-                  <SwiperSlide
-                    key={index}
-                    className="!h-full !w-fit self-stretch"
-                  >
-                    <EventPreview event={item} />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-3 mb-7">
-          <div>
-            <h3 className="mb-3 font-bold text-lg">Categories</h3>
+            <h3 className="mb-3 font-semibold text-lg text-gray-700 flex items-center gap-2">
+              Categories <FlareOutlinedIcon className="!text-yellow-500" />
+            </h3>
 
             <div>
               <Swiper
@@ -215,13 +198,11 @@ export function Home() {
                     className="!h-full !w-fit self-stretch"
                   >
                     <div
-                      className="py-2 px-4 flex gap-1 items-center shadow hover:shadow-md rounded-md text-purple-500 cursor-pointer no-select"
+                      className="bg-white py-2 px-4 flex gap-1 items-center shadow hover:shadow-md rounded-md text-gray-500 cursor-pointer no-select hover:bg-purple-500 hover:text-white"
                       onClick={() => navigate(`/category/${item.title}`)}
                     >
                       {item.icon}
-                      <p className="text-sm text-gray-700 font-base">
-                        {item.title}
-                      </p>
+                      <p className="text-sm font-base">{item.title}</p>
                     </div>
                   </SwiperSlide>
                 ))}
@@ -229,7 +210,74 @@ export function Home() {
             </div>
           </div>
         </section>
+
+        <section className="mb-12">
+          <div>
+            {thisWeek && (
+              <>
+                <h3 className="mb-3 font-semibold text-lg text-gray-700 flex items-center gap-2">
+                  This week
+                  <RocketLaunchOutlinedIcon className="!text-yellow-500" />
+                </h3>
+                <EventCard event={thisWeek[randomNumber(thisWeek.length)]} />
+              </>
+            )}
+
+            {!thisWeek && upcoming ? (
+              <>
+                <h3 className="mb-3 font-semibold text-lg text-gray-700 flex items-center gap-2">
+                  Upcoming event
+                  <NoiseAwareOutlinedIcon className="!text-yellow-500" />
+                </h3>
+                <EventCard event={upcoming[randomNumber(upcoming.length)]} />
+              </>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h3 className="mb-5 font-semibold text-lg text-gray-700 flex items-center gap-2">
+            Explore Events{" "}
+            <ImageSearchOutlinedIcon className="!text-yellow-500" />
+          </h3>
+
+          <div>
+            <ul>
+              {eventData.map((item, index) => (
+                <li
+                  data-aos="fade-up"
+                  data-aos-duration="500"
+                  // data-aos-mirror="true"
+                  className="mb-5"
+                  key={index}
+                >
+                  <EventPreview event={item} />
+                </li>
+              ))}
+            </ul>
+
+            {lastEventDate && (
+              <div className="pt-4 w-fit mx-auto">
+                <Button
+                  disableElevation
+                  disabled={eventData.length === eventsLength ? true : false}
+                  variant="contained"
+                  className="!normal-case !font-bold !rounded-xl !px-8"
+                  onClick={() => {
+                    loadMoreEvents(lastEventDate);
+                  }}
+                >
+                  {eventData.length === eventsLength
+                    ? "No more events"
+                    : "View more events"}
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
+
+      <Footer />
     </>
   );
 }
