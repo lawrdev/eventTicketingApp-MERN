@@ -1,6 +1,13 @@
 import axios from 'axios'
 
 const API_URL = '/api/events/'
+const PUBLIC_API_URL = '/public/events/'
+const SEARCH_API = '/public/events/search/'
+const CATEGORY_API = '/public/events/category/'
+const EVENT_CREATOR_API = '/public/events/creator/'
+
+
+//  PRIVATE
 
 // Create new Event
 const createNewEvent = async (eventData, token) => {
@@ -32,15 +39,17 @@ const getEvents = async (token) => {
     return response.data
 }
 
-// Get user Event
-const getEvent = async (eventId, token) => {
+// Event Update
+const eventUpdates = async (eventData, token) => {
+
+    const { eventId, userId, task } = eventData
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     }
 
-    const response = await axios.get(API_URL + eventId, config)
+    const response = await axios.put(API_URL + eventId, { userId, task }, config)
 
     return response.data
 }
@@ -55,18 +64,77 @@ const cancelEvent = async (eventId, token) => {
 
     const response = await axios.put(
         API_URL + eventId,
-        { status: 'cancel' },
+        { status: 'Closed' },
         config
     )
 
     return response.data
 }
 
+// Delete event
+const deleteEvent = async (eventId, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }
+
+    const response = await axios.delete(API_URL + eventId, config)
+
+    return response.data
+}
+
+
+// PUBLIC
+
+// Get all Events - [ public ]
+const getAllEvents = async (lastDate) => {
+
+    const response = await axios.get(`${PUBLIC_API_URL}all/${lastDate}`)
+    return response.data
+}
+
+// Get Event - [ public ]
+const getEvent = async (eventId) => {
+
+    const response = await axios.get(PUBLIC_API_URL + eventId)
+
+    return response.data
+}
+// Get Search Event
+const getSearchEvents = async (q) => {
+
+    const response = await axios.get(SEARCH_API + q)
+
+    return response.data
+}
+// Get Category Event
+const getCategoryEvents = async (q) => {
+
+    const response = await axios.get(CATEGORY_API + q)
+
+    return response.data
+}
+// Get Event Creator
+const getEventCreator = async (uid) => {
+
+    const response = await axios.get(EVENT_CREATOR_API + uid)
+
+    return response.data
+}
+
+
 const eventService = {
     createNewEvent,
+    deleteEvent,
     getEvents,
-    getEvent,
+    getSearchEvents,
     cancelEvent,
+    eventUpdates,
+    getEvent,
+    getAllEvents,
+    getEventCreator,
+    getCategoryEvents
 }
 
 export default eventService
