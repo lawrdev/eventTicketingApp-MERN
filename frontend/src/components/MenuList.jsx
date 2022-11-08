@@ -4,24 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import demoIMG from "../assets/img/demo.jpg";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
-import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
-import { useAutocomplete } from "@mui/base/AutocompleteUnstyled";
+import Search from "./Search";
 
-const list = [
-  "Popular events",
-  "Create an event",
-  "View Profile",
-  "About this project",
-  "Settings",
-];
 function MenuList({ user, setMenuOpen }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // TODO:: create search functionality
 
   const onLogout = () => {
     dispatch(logout());
@@ -39,20 +29,8 @@ function MenuList({ user, setMenuOpen }) {
   return (
     <Box sx={{ display: { sm: "none" } }}>
       <div className="mb-10 pb-3 border-b-2 border-gray-300 rounded-b-lg !no-select">
-        {/* search here */}
-        <div className="px-3 py-1.5">
-          <label htmlFor="search" className="relative">
-            <input
-              type="text"
-              id="search"
-              name="search"
-              placeholder="Search events..."
-              className="searchInput"
-            />
-            <div className="searchIconWrapper">
-              <SearchIcon fontSize="small" className="hover:scale-105" />
-            </div>
-          </label>
+        <div className="my-2">
+          <Search />
         </div>
 
         <div className="font-semibold">
