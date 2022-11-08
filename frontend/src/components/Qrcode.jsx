@@ -11,8 +11,8 @@ export default function Qrcode({ url }) {
   }, [url]);
   return (
     <>
-      <div>
-        <img src={src} alt="qrcode" />
+      <div className="shadow-2xl">
+        <img src={src} alt="qrcode" width="180px" />
       </div>
     </>
   );
