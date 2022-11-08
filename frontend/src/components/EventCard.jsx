@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import Chip from "@mui/material/Chip";
-import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
-import IosShareOutlinedIcon from "@mui/icons-material/IosShareOutlined";
-import Button from "@mui/material/Button";
-import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
-import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import { getEventCreator } from "../features/event/eventSlice";
+import PlaylistAddOutlinedIcon from "@mui/icons-material/PlaylistAddOutlined";
+import PlaylistAddCheckOutlinedIcon from "@mui/icons-material/PlaylistAddCheckOutlined";
+import Person3Icon from "@mui/icons-material/Person3";
 import dayjs from "dayjs";
 import Avatar from "@mui/material/Avatar";
-import DemoIMG from "../assets/img/demo.jpg";
 import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
 
 const cloud_name = "dqveipmsp";
 
-function EventCard({ event }) {
+export default function EventCard({ event }) {
   const [isBooked, setIsBooked] = useState(false);
-  const { eventType, details } = event;
+  const [creator, setCreator] = useState(false);
+  const { details } = event;
 
   const { user } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // check if booked
   useEffect(() => {
@@ -35,91 +35,92 @@ function EventCard({ event }) {
     }
   }, [event, user]);
 
+  // get avatar of event creator
+  useEffect(() => {
+    if (event) {
+      dispatch(getEventCreator(event.user)).unwrap().then(setCreator);
+    }
+  }, [dispatch, event]);
+
   return (
     <div
-      className="border-2 border-gray-200 shadow hover:shadow-lg rounded-b rounded-t-xl !text-start h-full"
-      onClick={() => navigate(`/events/${event._id}`)}
+      className="!w-full bg-white rounded-xl overflow-hidden shadow-md select-none"
+      style={{ maxWidth: "360px" }}
     >
       <div>
-        <div className="w-fit relative">
-          <div className="overflow-hidden relative h-40 bg-stale-300 bg-gray-300 rounded-t-xl">
+        <div className="relative">
+          <div className="relative">
             <div className="eventCardImageWrapper">
               <img
-                src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_1200,h_260,c_fill,q_100/${details?.img_id}.jpg`}
+                src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_600,h_310,c_fill,q_100/${details?.img_id}.jpg`}
                 alt="event banner"
                 className="eventCardImage"
               />
             </div>
 
-            <div className="absolute top-3 left-2">
-              <div className="flex gap-1 text-gray-500 items-center bg-white py-1 px-2 rounded-md !font-bold">
-                <SellOutlinedIcon fontSize="small" />
-                <p className="text-xs">FREE</p>
-              </div>
-            </div>
-            <div className="absolute top-3 right-2 flex flex-col gap-2 cursor-pointer">
+            <div className="absolute bottom-0 right-2 translate-y-1/2 flex flex-col gap-2 cursor-pointer">
               {user && (
-                <div className="flex gap-2 items-center text-white">
+                <div className="flex gap-2 items-center text-white bg-yellow-400 rounded-full">
                   {isBooked ? (
-                    <FavoriteOutlinedIcon fontSize="small" />
+                    <Tooltip title="Cancel attendance">
+                      <IconButton
+                        onClick={() => navigate(`/events/${event?._id}`)}
+                      >
+                        <PlaylistAddCheckOutlinedIcon fontSize="large" />
+                      </IconButton>
+                    </Tooltip>
                   ) : (
-                    <FavoriteBorderOutlinedIcon fontSize="small" />
+                    <Tooltip title="Join this event">
+                      <IconButton
+                        onClick={() => navigate(`/events/${event?._id}`)}
+                      >
+                        <PlaylistAddOutlinedIcon fontSize="large" />
+                      </IconButton>
+                    </Tooltip>
                   )}
                 </div>
               )}
-              <div className="flex gap-2 text-white items-center">
-                <IosShareOutlinedIcon fontSize="small" />
-              </div>
             </div>
-          </div>
-
-          <div className="absolute z-50 bottom-0 right-2 translate-y-1/2 p-1 bg-white rounded-full cursor-pointer">
-            <Tooltip title={`${user.name}`}>
-              <Avatar
-                alt="Profile Avi"
-                src={DemoIMG}
-                sx={{ width: 50, height: 50 }}
-              />
-            </Tooltip>
           </div>
         </div>
 
-        <div className="px-5 pb-4 flex flex-col">
-          <div className="mt-3 flex gap-7 item-start overflow-hidden">
-            <div className="flex flex-col gap-1">
-              <p className="text-purple-400 font-bold">
-                {dayjs(details.date).format("MMM")}
-              </p>
-              <p className="font-bold">{dayjs(details.date).format("DD")}</p>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-gray-600 mb-1.5">
-                {details.title}
-              </h3>
-              <p className="text-sm text-gray-500">{details.description}</p>
-            </div>
+        <div
+          className="mt-3 px-3 pb-3"
+          onClick={() => navigate(`/events/${event?._id}`)}
+        >
+          <div className="mb-5">
+            <p className="mb-2 text-purple-700 font-semibold tracking-wider text-sm">
+              {dayjs(details.date).format("DD MMMM")}
+            </p>
+            <p className="text-gray-900 text-lg font-semibold leading-tight">
+              {details.title}
+            </p>
           </div>
 
-          {/* <div className="mt-5 w-fit mx-auto">
-            <Button
-              disableElevation
-              color="primary"
-              variant="contained"
-              onClick={() => navigate(`/events/${event._id}`)}
-              sx={{ textTransform: "none" }}
-              size="small"
-            >
-              View Event
-            </Button>
-          </div> */}
+          <div className="flex gap-2 items-center">
+            <Tooltip title="Host">
+              <Avatar
+                alt="Profile Avi"
+                src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_30,h_30,c_fill,q_100/${creator?.img}.jpg`}
+                sx={{ width: 30, height: 30 }}
+              />
+            </Tooltip>
+
+            <p className="text-xs text-gray-500 font-semibold">
+              {creator.name}
+            </p>
+            <div className="flex-grow flex gap-2 justify-end items-center text-gray-500">
+              <Person3Icon fontSize="10px" />
+              <p className="text-xs">
+                {event.ticket.members.length > 0
+                  ? event.ticket.members.length
+                  : 0}{" "}
+                joined
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-// ADD IMAGES
-// CREATE TICKET OBJECT inside events
-
-export default EventCard;
