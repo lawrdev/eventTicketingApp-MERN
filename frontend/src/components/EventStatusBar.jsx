@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import ArrowCircleDownOutlinedIcon from "@mui/icons-material/ArrowCircleDownOutlined";
 import EventPreview from "./EventPreview";
-import Divider from "@mui/material/Divider";
 
 function EventStatusBar({ events }) {
   const [upcoming, setUpcoming] = useState([]);
@@ -18,6 +16,7 @@ function EventStatusBar({ events }) {
     setExpanded(isExpanded ? panel : false);
   };
 
+  // CHECK EVENT STATUS
   useEffect(() => {
     let arr1 = [];
     let arr2 = [];
