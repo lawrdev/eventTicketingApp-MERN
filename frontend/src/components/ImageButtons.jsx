@@ -27,12 +27,13 @@ export default function ImageButtons({ save, cancel, count }) {
   }, [count]);
 
   const handleSave = () => {
+    save();
     setLoading(true);
     setSuccess(false);
-    save();
   };
 
   return (
+    // for saving images to cloudinary
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box sx={{ m: 1, position: "relative" }}>
         <Button
@@ -66,7 +67,7 @@ export default function ImageButtons({ save, cancel, count }) {
           size="small"
           color="inherit"
           variant="outlined"
-          disabled={loading}
+          disabled={loading || success ? true : false}
           onClick={cancel}
         >
           Cancel
