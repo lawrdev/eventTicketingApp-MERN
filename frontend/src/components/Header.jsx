@@ -5,66 +5,46 @@ import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import StyleIcon from "@mui/icons-material/Style";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
-import { useSelector, useDispatch } from "react-redux";
-import { logout, reset } from "../features/auth/authSlice";
-import demoIMG from "../assets/img/demo.jpg";
-import LogoutIcon from "@mui/icons-material/Logout";
-import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
+import { useSelector } from "react-redux";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
 import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Box from "@mui/material/Box";
 import MenuList from "./MenuList";
 
-export function Header() {
-  const [anchor, setAnchor] = useState(null);
+// cloudinary keys
+const cloud_name = "dqveipmsp";
+
+export function Header({ className, variant }) {
+  // const [anchor, setAnchor] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
 
-  const handleOpen = (e) => {
-    setAnchor(e.currentTarget);
-  };
-  const handleClose = (e) => {
-    setAnchor(null);
-  };
-  const onLogout = () => {
-    dispatch(logout());
-    dispatch(reset());
-
-    handleClose();
-
-    navigate("/");
-  };
-  const onProfile = () => {
-    handleClose();
-    navigate("/profile");
-  };
-
   return (
     <header>
-      <div className="mt-2 mb-2 select-none">
-        <div className=" !text-gray-700">
-          <Toolbar className="!justify-between">
+      <div className="mt-4 select-none">
+        <div className="mb-2 !text-gray-700">
+          <Toolbar
+            variant="dense"
+            className="!justify-between max-w-4xl mx-auto !px-0"
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              sx={{ mr: 2, display: { sm: "none" } }}
+              // className="!ml-1"
+              sx={{ display: { sm: "none" } }}
               onClick={() => setMenuOpen(!menuOpen)}
             >
-              <MenuIcon />
+              <MenuOutlinedIcon />
             </IconButton>
 
             <div
-              className="cursor-pointer  hover:bg-black rounded-full
-                hover:bg-opacity-5 p-1.5 duration-300 ease-in-out"
+              className="cursor-pointer text-gray-700"
               onClick={() => navigate("/")}
             >
               <StyleIcon fontSize="large" />
@@ -74,7 +54,10 @@ export function Header() {
               className="flex-grow"
               sx={{ display: { display: "none", sm: "block" } }}
             >
-              <p className="font-bold w-fit cursor-pointer">
+              <p
+                className="font-bold w-fit cursor-pointer"
+                onClick={() => navigate("/")}
+              >
                 EventTicketing App
               </p>
             </Box>
@@ -104,38 +87,18 @@ export function Header() {
                 </Box>
               </div>
             ) : (
-              <div>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpen} sx={{ p: 0 }}>
-                    <Avatar alt="account settings" src={demoIMG} />
+              <>
+                <Tooltip title="Profile">
+                  <IconButton sx={{ p: 0 }}>
+                    <Link to="/profile">
+                      <Avatar
+                        alt="profile"
+                        src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_50,h_50,c_fill,q_100/${user?.img}.jpg`}
+                      />
+                    </Link>
                   </IconButton>
                 </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchor}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchor)}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={onProfile} className="w-44">
-                    <AccountBoxOutlinedIcon />
-                    <p className="text-center ml-2">Profile</p>
-                  </MenuItem>
-                  <MenuItem onClick={onLogout}>
-                    <LogoutIcon />
-                    <p className="text-center ml-2">Sign out</p>
-                  </MenuItem>
-                </Menu>
-              </div>
+              </>
             )}
           </Toolbar>
         </div>
@@ -146,7 +109,56 @@ export function Header() {
       {menuOpen ? (
         <div>
           <div className="w-full">
-            <MenuList user={user} setMenuOpen={setMenuOpen} />
+            {user ? (
+              <MenuList user={user} setMenuOpen={setMenuOpen} />
+            ) : (
+              <>
+                <Box sx={{ display: { sm: "none" } }}>
+                  <div className="mb-10 pb-3 border-b-2 border-gray-300 rounded-b-lg">
+                    <div className="font-semibold">
+                      <ul>
+                        <li
+                          className="menuListItem scaleDown"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Divider />
+                          <Link to="/">
+                            <p>Home</p>
+                          </Link>
+                        </li>
+                        <li
+                          className="menuListItem scaleDown"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Divider />
+                          <Link to="/create-event">
+                            <p>About this project</p>
+                          </Link>
+                        </li>
+                        <li
+                          className="menuListItem scaleDown"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Divider />
+                          <Link to="/register">
+                            <p>Register</p>
+                          </Link>
+                        </li>
+                        <li
+                          className="menuListItem scaleDown"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <Divider />
+                          <Link to="/login">
+                            <p>Login</p>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Box>
+              </>
+            )}
           </div>
         </div>
       ) : null}
