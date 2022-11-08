@@ -61,6 +61,7 @@ export function CreateEvent() {
   const [event, setEvent] = useState("Party");
   const [details, setDetails] = useState(detailsInitialState);
   const [eventDate, setEventDate] = useState(dayjs());
+  const [stampEventDate, setStampEventDate] = useState(dayjs().unix());
   const [isLoading, setIsLoading] = useState(false);
   const [count, setCount] = useState(0);
   // we need only 1 image
@@ -72,7 +73,9 @@ export function CreateEvent() {
 
   // on date/time change
   const handleDate = (newValue) => {
+    let ts = newValue.unix();
     setEventDate(newValue);
+    setStampEventDate(ts);
     setDetails({
       ...details,
       date: eventDate.format("DD MMMM, YYYY"),
@@ -200,7 +203,13 @@ export function CreateEvent() {
     dispatch(resetSnackbar());
 
     // dispatch create event
-    dispatch(createEvent({ eventType: event, details }))
+    dispatch(
+      createEvent({
+        eventDate: stampEventDate,
+        eventType: event,
+        details,
+      })
+    )
       .unwrap()
       .then(() => {
         // good response so navigate the user
@@ -249,7 +258,8 @@ export function CreateEvent() {
                 hiddenLabel
                 fullWidth
                 required
-                placeholder="Halloween party hosted by Sara"
+                maxLength="50"
+                placeholder="Enter a title for your event"
                 size="small"
                 id="title"
                 variant="outlined"
@@ -300,21 +310,6 @@ export function CreateEvent() {
                   />
                 )}
               />
-              {/* <TextField
-                size="small"
-                id="event"
-                select
-                fullWidth
-                hiddenLabel
-                value={event}
-                onChange={handleEventChange}
-              >
-                {events.map((option, index) => (
-                  <MenuItem key={index} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField> */}
             </div>
 
             <div className="mb-5">
@@ -579,10 +574,6 @@ export function CreateEvent() {
               type="submit"
               className="w-full py-3 font-bold"
             />
-
-            {/* <Button color="purple" type="submit" fullWidth variant="contained">
-              Create Event
-            </Button> */}
           </div>
         </form>
       </section>
