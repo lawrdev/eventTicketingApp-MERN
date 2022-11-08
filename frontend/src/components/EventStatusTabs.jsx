@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Unstable_Grid2";
 import EventCard from "./EventCard";
 
 function TabPanel(props) {
@@ -83,42 +82,42 @@ export default function EventStatusTab({ events }) {
       </Box>
 
       <TabPanel value={value} index={0}>
-        <Grid container spacing={{ xs: 3, sm: 3 }} columns={{ xs: 4, sm: 8 }}>
+        <ul className="flex gap-3 flex-wrap">
           {upcoming.map((item, index) => (
-            <Grid xs={4} sm={4} key={index}>
+            <li key={index}>
               <EventCard event={item} />
-            </Grid>
+            </li>
           ))}
           {upcoming.length === 0 && (
             <p className="w-full text-center text-gray-500">No events</p>
           )}
-        </Grid>
+        </ul>
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <Grid container spacing={{ xs: 3, sm: 3 }} columns={{ xs: 4, sm: 8 }}>
+        <ul className="flex gap-3 flex-wrap">
           {happening.map((item, index) => (
-            <Grid xs={4} sm={4} key={index}>
+            <li key={index}>
               <EventCard event={item} />
-            </Grid>
+            </li>
           ))}
-          {happening.length === 0 && (
+          {upcoming.length === 0 && (
             <p className="w-full text-center text-gray-500">No events</p>
           )}
-        </Grid>
+        </ul>
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <Grid container spacing={{ xs: 3, sm: 3 }} columns={{ xs: 4, sm: 8 }}>
+        <ul className="flex gap-3 flex-wrap">
           {closed.map((item, index) => (
-            <Grid xs={4} sm={4} key={index}>
+            <li key={index}>
               <EventCard event={item} />
-            </Grid>
+            </li>
           ))}
-          {closed.length === 0 && (
+          {upcoming.length === 0 && (
             <p className="w-full text-center text-gray-500">No events</p>
           )}
-        </Grid>
+        </ul>
       </TabPanel>
     </Box>
   );
