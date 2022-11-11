@@ -14,7 +14,7 @@
   color: #fff;
   letter-spacing: 2px;
   line-height: 1;
-  box-shadow: 6px 0px 0px /*#00e6f6*/ /*#e0b0ff*/ #fef08a; /*yellow*/
+  box-shadow: 6px 0px 0px #a855f7; /*#00e6f6 #e0b0ff #fef08a - yellow*/
   outline: transparent;
   position: relative;
 }
