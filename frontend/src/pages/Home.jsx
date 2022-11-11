@@ -141,7 +141,11 @@ export function Home() {
         <Header />
       </div>
 
-      <section className="mb-10 relative" style={{ zIndex: 200 }}>
+      <section
+        className="mb-10 relative"
+        style={{ zIndex: 200 }}
+        data-aos="fade-down"
+      >
         <div className="relative">
           <div className="HomeImageWrapper">
             <img
@@ -155,7 +159,7 @@ export function Home() {
             <h3 className="text-xl sm:text-xl font-bold mb-1">
               EventTicketing
             </h3>
-            <p className="text-sm opacity-70 sm:text-sm mb-3 sm:mb-5">
+            <p className="text-sm opacity-80 sm:text-sm mb-3 sm:mb-5">
               Let's you take your meetings, parties, music events, conferences
               and other events to the next level
             </p>
