@@ -1,5 +1,14 @@
+*,
+::before,
+::after {
+  --primary-color: #a855f7 /*#cf9fff*/;
+  --primary-color-light: #e0b0ff;
+  --primary-color-dark: #bf40bf;
+  --secondary-color: #374151;
+  --tert-color: #eab308; /* yellow */
+}
 body {
-  font-family: "Red Hat Display", sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #f8f9fa !important;
   min-height: 100%;
   position: relative;
@@ -19,7 +28,7 @@ input[type="number"] {
 }
 
 a:hover {
-  @apply underline;
+  @apply underline hover:!text-yellow-600;
 }
 .btn {
   @apply hover:duration-300;
@@ -34,11 +43,145 @@ a:hover {
   border: 2px solid #ddd;
 }
 
+.qbox {
+  border: 2px solid #000 !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+}
 .headerTitle {
   @apply font-bold text-xl;
 }
 .headerSubTitle {
   @apply text-gray-500 font-semibold p-1;
+}
+
+/* Home */
+.introWrapper {
+  @apply flex justify-between items-center;
+}
+@media screen and (max-width: 470px) {
+  .introWrapper {
+    @apply flex-wrap;
+  }
+}
+.HomeImageWrapper {
+  @apply shadow-xl;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+.HomeImage {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+/* home button */
+.homeBtn,
+.homeBtn::after {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  background: linear-gradient(
+    45deg,
+    transparent 5%,
+    #a855f7 5%
+  ); /*#ff013c red*/
+  border: 0;
+  color: #fff;
+  letter-spacing: 3px;
+  line-height: 1;
+  box-shadow: 6px 0px 0px #faf9f6; /*#00e6f6 light blue sort*/
+  outline: transparent;
+  position: relative;
+}
+
+.homeBtn::after {
+  --slice-0: inset(50% 50% 50% 50%);
+  --slice-1: inset(80% -6px 0 0);
+  --slice-2: inset(50% -6px 30% 0);
+  --slice-3: inset(10% -6px 85% 0);
+  --slice-4: inset(40% -6px 43% 0);
+  --slice-5: inset(80% -6px 5% 0);
+  content: "HOVER ME";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 3%,
+    #00e6f6 3%,
+    #00e6f6 5%,
+    #a855f7 5% /*#ff013c red*/
+  );
+  text-shadow: -3px -3px 0px #f8f005, 3px 3px 0px #00e6f6;
+  clip-path: var(--slice-0);
+}
+
+.homeBtn:hover::after {
+  animation: 1s glitch;
+  animation-timing-function: steps(2, end);
+}
+
+@keyframes glitch {
+  0% {
+    clip-path: var(--slice-1);
+    transform: translate(-20px, -10px);
+  }
+
+  10% {
+    clip-path: var(--slice-3);
+    transform: translate(10px, 10px);
+  }
+
+  20% {
+    clip-path: var(--slice-1);
+    transform: translate(-10px, 10px);
+  }
+
+  30% {
+    clip-path: var(--slice-3);
+    transform: translate(0px, 5px);
+  }
+
+  40% {
+    clip-path: var(--slice-2);
+    transform: translate(-5px, 0px);
+  }
+
+  50% {
+    clip-path: var(--slice-3);
+    transform: translate(5px, 0px);
+  }
+
+  60% {
+    clip-path: var(--slice-4);
+    transform: translate(5px, 10px);
+  }
+
+  70% {
+    clip-path: var(--slice-2);
+    transform: translate(-10px, 10px);
+  }
+
+  80% {
+    clip-path: var(--slice-5);
+    transform: translate(20px, -10px);
+  }
+
+  90% {
+    clip-path: var(--slice-1);
+    transform: translate(-10px, 0px);
+  }
+
+  100% {
+    clip-path: var(--slice-1);
+    transform: translate(0);
+  }
 }
 
 /* snackbar */
@@ -102,10 +245,10 @@ a:hover {
 
 /* Event Tab */
 #bud .eventTab {
-  @apply !rounded-xl !mb-2 !text-gray-400 !font-medium;
+  @apply !text-gray-400;
 }
 #bud .eventTab.Mui-selected {
-  @apply !bg-gray-200 !text-blue-700 duration-300 ease-in-out;
+  @apply !text-gray-700;
 }
 
 /* search UI */
@@ -127,7 +270,7 @@ a:hover {
   transform: scale(0.99);
 }
 
-/* event Image */
+/* CREAT event Image */
 .imageGridImgWrapper {
   @apply overflow-hidden rounded;
 }
@@ -136,43 +279,37 @@ a:hover {
   background-repeat: no-repeat;
 
   width: 100%;
-  height: 160px;
+  height: 260px;
   object-fit: cover;
 }
 
 /* event card */
 .eventCardImageWrapper {
-  @apply overflow-hidden;
-  width: 100%;
-  height: 100%;
+  @apply w-full bg-purple-400;
+  max-width: 360px;
+  width: 100% !important;
+  height: 140px;
 }
 .eventCardImage {
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
+  object-position: bottom center;
 
   width: 100%;
-  height: auto;
+  height: 100%;
   min-height: 100%;
   object-fit: cover;
 }
 
 /* event preview */
 .eventPreviewCard {
-  @apply pt-1.5 pb-3 px-2 w-fit rounded-xl shadow-md cursor-pointer hover:shadow-lg select-none;
-  border: 0.5px solid #eee;
-  width: 128px;
-  height: 185px;
+  @apply w-full cursor-pointer select-none rounded-2xl bg-white shadow-md hover:shadow-lg duration-300 ease-in-out;
 }
 .previewCardImageWrapper {
-  @apply relative mb-3 w-fit rounded-xl overflow-hidden shadow-xl bg-blue-200;
-  height: 90px;
-  width: 100%;
+  @apply relative w-full rounded-2xl overflow-hidden bg-purple-500;
+  height: 146px;
+  width: 128px;
 }
 .previewCardImage {
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
+  object-position: bottom center;
   object-fit: cover;
   height: 100%;
   width: 100%;
@@ -180,18 +317,21 @@ a:hover {
 
 /* event page */
 .eventPageImageWrapper {
-  @apply relative w-full bg-gray-400 overflow-hidden;
+  @apply relative shadow-md rounded;
   width: 100%;
-  height: 100%;
+  height: 300px;
+  overflow: hidden;
 }
 .eventPageImage {
   background-position: 50% 50%;
   background-repeat: no-repeat;
 
   width: 100%;
-  height: auto;
-  min-height: 100%;
+  height: 100%;
   object-fit: cover;
+}
+.eventPageDetails {
+  @apply py-1;
 }
 .registerEvent {
   @apply w-fit cursor-pointer;
@@ -226,4 +366,70 @@ a:hover {
 .swiper-button-next::after,
 .swiper-button-prev::after {
   display: none;
+}
+
+/* bounce spinner */
+.loader {
+  width: 48px;
+  height: 48px;
+  margin: auto;
+  position: relative;
+}
+
+.loader:before {
+  content: "";
+  width: 48px;
+  height: 5px;
+  background: /*#f0808050*/ #a855f750;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  border-radius: 50%;
+  animation: shadow324 0.5s linear infinite;
+}
+
+.loader:after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: /*#f08080*/ #a855f7;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 4px;
+  animation: jump7456 0.5s linear infinite;
+}
+
+@keyframes jump7456 {
+  15% {
+    border-bottom-right-radius: 3px;
+  }
+
+  25% {
+    transform: translateY(9px) rotate(22.5deg);
+  }
+
+  50% {
+    transform: translateY(18px) scale(1, 0.9) rotate(45deg);
+    border-bottom-right-radius: 40px;
+  }
+
+  75% {
+    transform: translateY(9px) rotate(67.5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(90deg);
+  }
+}
+
+@keyframes shadow324 {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+
+  50% {
+    transform: scale(1.2, 1);
+  }
 }
