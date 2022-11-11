@@ -82,7 +82,7 @@ export default function EventStatusTab({ events }) {
       </Box>
 
       <TabPanel value={value} index={0}>
-        <ul className="flex gap-3 flex-wrap">
+        <ul className="flex gap-4 justify-center flex-wrap">
           {upcoming.map((item, index) => (
             <li key={index}>
               <EventCard event={item} />
@@ -95,7 +95,7 @@ export default function EventStatusTab({ events }) {
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ul className="flex gap-3 flex-wrap">
+        <ul className="flex gap-4 justify-center flex-wrap">
           {happening.map((item, index) => (
             <li key={index}>
               <EventCard event={item} />
@@ -108,7 +108,7 @@ export default function EventStatusTab({ events }) {
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <ul className="flex gap-3 flex-wrap">
+        <ul className="flex gap-4 justify-center flex-wrap">
           {closed.map((item, index) => (
             <li key={index}>
               <EventCard event={item} />
