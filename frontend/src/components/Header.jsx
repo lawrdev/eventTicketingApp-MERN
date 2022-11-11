@@ -26,40 +26,37 @@ export function Header({ className, variant }) {
 
   return (
     <header>
-      <div className="mt-4 select-none">
+      <div className="mt-2 select-none">
         <div className="mb-2 !text-gray-700">
           <Toolbar
             variant="dense"
-            className="!justify-between max-w-4xl mx-auto !px-0"
+            className="!justify-between max-w-5xl mx-auto !px-0 !pl-2"
           >
             <IconButton
               color="inherit"
-              aria-label="open drawer"
+              aria-label="open menu"
               edge="start"
-              // className="!ml-1"
+              className="qbox"
               sx={{ display: { sm: "none" } }}
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <MenuOutlinedIcon />
             </IconButton>
 
-            <div
-              className="cursor-pointer text-gray-700"
-              onClick={() => navigate("/")}
-            >
-              <StyleIcon fontSize="large" />
-            </div>
-
-            <Box
-              className="flex-grow"
-              sx={{ display: { display: "none", sm: "block" } }}
-            >
-              <p
-                className="font-bold w-fit cursor-pointer"
+            <Box sx={{ display: { display: "none", sm: "block" } }}>
+              <div
+                className="cursor-pointer text-gray-700 flex gap-2 items-center"
                 onClick={() => navigate("/")}
               >
-                EventTicketing App
-              </p>
+                <StyleIcon fontSize="large" />
+
+                <p
+                  className="font-bold w-fit cursor-pointer"
+                  onClick={() => navigate("/")}
+                >
+                  EventTicketing App
+                </p>
+              </div>
             </Box>
 
             {!user ? (
@@ -108,7 +105,7 @@ export function Header({ className, variant }) {
 
       {menuOpen ? (
         <div>
-          <div className="w-full">
+          <div className="w-full" data-aos="fade-right">
             {user ? (
               <MenuList user={user} setMenuOpen={setMenuOpen} />
             ) : (
