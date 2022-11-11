@@ -36,7 +36,7 @@ function App() {
   })
 
   return (<>
-    <div className="max-w-4xl mx-auto pb-6">
+    <div className="max-w-5xl mx-auto">
       <ThemeProvider theme={theme}>
 
         <Routes>
