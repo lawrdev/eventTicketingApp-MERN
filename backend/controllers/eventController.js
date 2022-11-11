@@ -40,35 +40,44 @@ const getSearchEvents = asyncHandler(async (req, res) => {
     res.status(200).json(events)
 })
 
+// @desc    get events by Category
+// @route   GET /public/events/category/:q
+// @access  Public
+const getCategoryEvents = asyncHandler(async (req, res) => {
+
+    const { q } = req.params
+    const events = await Event.find(
+        {
+            eventType: {
+                "$regex": q,
+                "$options": "i"
+            }
+        })
+
+    if (!events) {
+        res.status(200).json({ mssg: 'No matching event type' })
+    }
+
+    res.status(200).json(events)
+})
+
 // @desc    get ALL events
-// @route   GET /public/events
+// @route   GET /public/events/all/:lastId
 // @access  Public
 const getAllEvents = asyncHandler(async (req, res) => {
 
-    const { last_id } = req.body
+    const { lastDate } = req.params
     const docCount = await Event.countDocuments({})
-    let events;
 
-    // for load more
-    if (last_id) {
-        events = await Event
-            .find({ _id: { $lt: last_id } })
-            .sort({ _id: -1 })
-            .limit(4)
-    } else {
-        events = await Event
-            .find({}) // 'details.date': { $gte: last_id }
-            .sort({ _id: -1 })
-            .limit(4)
-    }
+    // load more [ 3 ]
+    const events = await Event.find({ eventDate: { $gt: parseInt(lastDate) } }).sort({ eventDate: +1 }).limit(3)
 
-
-    let lastEventId = ''
+    // get eventDate of last event
+    let lastItemIndex = events.length - 1
+    let lastEventDate = events[lastItemIndex].eventDate
+    // Update status
     if (events) {
-
-        // Update status
         events.forEach(async (item) => {
-
             const eventDate = dayjs(item.details.date)
             const dayCount = eventDate.diff(today, 'day')
 
@@ -79,22 +88,14 @@ const getAllEvents = asyncHandler(async (req, res) => {
             } else {
                 item.status = 'Upcoming'
             }
-
             await item.save()
         })
-
-        // get id of last event
-        let lastItem = events.length - 1
-        lastEventId = events[lastItem]._id
     }
-
-    res.status(200).json({ events: events, lastId: lastEventId, length: docCount })
-
-    // IN FRONTEND, SET A COUNT THAT MULTIPLIES ON EACH REQ TO CHECK IF THE PRODUCT IS = TO THE DOCCOUNT RETURNED FROM THE REQ, IF YES, DISABLE BTN
+    res.status(200).json({ events, lastEventDate, length: docCount })
 })
 
 // @desc    get single user event
-// @route   GET /api/events/:id
+// @route   GET /public/events/:id
 // @access  Public
 const getEvent = asyncHandler(async (req, res) => {
 
@@ -211,5 +212,6 @@ module.exports = {
     createEvent,
     eventUpdates,
     deleteEvent,
-    getAllEvents
+    getAllEvents,
+    getCategoryEvents
 }

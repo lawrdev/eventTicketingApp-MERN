@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import Spinner from "../components/Spinner";
 import TextField from "@mui/material/TextField";
-import DemoIMG from "../assets/img/demo.jpg";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import Button from "@mui/material/Button";
@@ -25,6 +24,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import Avatar from "@mui/material/Avatar";
 import EventStatusTabs from "../components/EventStatusTabs";
+import AppButton from "../components/AppButton";
 
 // cloudinary keys
 const cloud_name = "dqveipmsp";
@@ -183,10 +183,8 @@ export function Profile() {
 
   if (isLoading) return <Spinner />;
 
-  // FIX PROFILE LOOK
-
   return (
-    <>
+    <div className="px-3 sm:px-6">
       <Header />
       <section className="relative">
         <div className="mt-2 mb-8 flex justify-between items-center ">
@@ -254,17 +252,22 @@ export function Profile() {
                 <p className="text-sm text-gray-500">{user.email}</p>
               </div>
 
-              <div className="flex gap-2 justify-center">
-                <Button
-                  className="!rounded-lg !normal-case !px-8"
-                  disableElevation
-                  variant="contained"
+              <div className="flex gap-3 justify-center">
+                <AppButton
+                  text="Edit profile"
+                  fill={true}
                   onClick={() => {
                     setIsEdit(true);
                   }}
+                />
+
+                {/* <Button
+                  className="!rounded-lg !normal-case !px-8"
+                  disableElevation
+                  variant="contained"
                 >
                   Edit Profile
-                </Button>
+                </Button> */}
                 <Button
                   className="!rounded-lg !bg-gray-300 !text-gray-500"
                   disableElevation
@@ -282,11 +285,8 @@ export function Profile() {
               <>
                 <form autoComplete="off" onSubmit={handleSubmit}>
                   <div className="w-full">
-                    <div className="mb-2">
-                      <label
-                        htmlFor="name"
-                        className="text-sm font-semibold block pb-1"
-                      >
+                    <div className="mb-3">
+                      <label htmlFor="name" className="font-bold block pb-1">
                         Name
                       </label>
                       <TextField
@@ -300,11 +300,8 @@ export function Profile() {
                       />
                     </div>
 
-                    <div className="mb-2">
-                      <label
-                        htmlFor="email"
-                        className="text-sm font-semibold block pb-1"
-                      >
+                    <div className="mb-3">
+                      <label htmlFor="email" className="font-bold block pb-1">
                         Email
                       </label>
                       <TextField
@@ -320,11 +317,8 @@ export function Profile() {
                       />
                     </div>
 
-                    <div className="mb-2">
-                      <label
-                        htmlFor="phone"
-                        className="text-sm font-semibold block pb-1"
-                      >
+                    <div className="mb-3">
+                      <label htmlFor="phone" className="font-bold block pb-1">
                         Phone Number
                       </label>
                       <TextField
@@ -340,11 +334,8 @@ export function Profile() {
                       />
                     </div>
 
-                    <div className="mb-2">
-                      <label
-                        htmlFor="company"
-                        className="text-sm font-semibold block pb-1"
-                      >
+                    <div className="mb-3">
+                      <label htmlFor="company" className="font-bold block pb-1">
                         Position&Company
                       </label>
                       <TextField
@@ -361,10 +352,7 @@ export function Profile() {
                     </div>
 
                     <div className="mb-3">
-                      <label
-                        htmlFor="website"
-                        className="text-sm font-semibold block pb-1"
-                      >
+                      <label htmlFor="website" className="font-bold block pb-1">
                         Website/Blog
                       </label>
                       <TextField
@@ -384,8 +372,21 @@ export function Profile() {
 
                     <div>
                       <div className="w-fit mx-auto sm:ml-auto sm:mr-0">
-                        <Stack spacing={1} direction="row">
-                          <Button
+                        <Stack spacing={2} direction="row">
+                          <AppButton
+                            disabled={isSaving}
+                            fill={true}
+                            text="Submit"
+                            type="submit"
+                          />
+                          <AppButton
+                            disabled={isSaving}
+                            fill={false}
+                            text="Cancel"
+                            type="button"
+                            onClick={onCancel}
+                          />
+                          {/* <Button
                             disableElevation
                             size="small"
                             variant="contained"
@@ -393,8 +394,8 @@ export function Profile() {
                             disabled={isSaving}
                           >
                             Submit
-                          </Button>
-                          <Button
+                          </Button> */}
+                          {/* <Button
                             disableElevation
                             size="small"
                             variant="outlined"
@@ -402,7 +403,7 @@ export function Profile() {
                             onClick={onCancel}
                           >
                             Cancel
-                          </Button>
+                          </Button> */}
                         </Stack>
                       </div>
                     </div>
@@ -420,6 +421,6 @@ export function Profile() {
           {events && <EventStatusTabs events={events} />}
         </div>
       </section>
-    </>
+    </div>
   );
 }
