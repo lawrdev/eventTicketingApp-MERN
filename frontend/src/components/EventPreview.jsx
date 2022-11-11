@@ -50,7 +50,7 @@ function EventPreview({ event }) {
             </div>
           </div>
 
-          <div className="flex flex-col justify-between py-3">
+          <div className="flex flex-col justify-between py-2.5">
             <div className="mb-3">
               <p className="mb-2 text-purple-700 font-semibold tracking-wider ">
                 {dayjs(event.details.date).format("DD MMMM")}
