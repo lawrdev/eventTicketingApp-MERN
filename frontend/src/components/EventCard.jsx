@@ -44,80 +44,76 @@ export default function EventCard({ event }) {
 
   return (
     <div
-      className="!w-full bg-white rounded-xl overflow-hidden shadow-md select-none"
-      style={{ maxWidth: "360px" }}
+      className=" h-full rounded-xl overflow-hidden shadow-md select-none flex flex-col hover:shadow-lg"
+      style={{ width: "300px" }}
     >
-      <div>
+      <div className="relative">
         <div className="relative">
-          <div className="relative">
-            <div className="eventCardImageWrapper">
-              <img
-                src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_600,h_310,c_fill,q_100/${details?.img_id}.jpg`}
-                alt="event banner"
-                className="eventCardImage"
-              />
-            </div>
+          <div className="eventCardImageWrapper">
+            <img
+              src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_600,h_310,c_fill,q_100/${details?.img_id}.jpg`}
+              alt="event banner"
+              className="eventCardImage"
+            />
+          </div>
 
-            <div className="absolute bottom-0 right-2 translate-y-1/2 flex flex-col gap-2 cursor-pointer">
-              {user && (
-                <div className="flex gap-2 items-center text-white bg-yellow-400 rounded-full">
-                  {isBooked ? (
-                    <Tooltip title="Cancel attendance">
-                      <IconButton
-                        onClick={() => navigate(`/events/${event?._id}`)}
-                      >
-                        <PlaylistAddCheckOutlinedIcon fontSize="large" />
-                      </IconButton>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title="Join this event">
-                      <IconButton
-                        onClick={() => navigate(`/events/${event?._id}`)}
-                      >
-                        <PlaylistAddOutlinedIcon fontSize="large" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </div>
-              )}
-            </div>
+          <div className="absolute bottom-0 right-2 translate-y-1/2 flex flex-col gap-2 cursor-pointer">
+            {user && (
+              <div className="flex gap-2 items-center text-white bg-yellow-400 rounded-full">
+                {isBooked ? (
+                  <Tooltip title="Cancel attendance">
+                    <IconButton
+                      onClick={() => navigate(`/events/${event?._id}`)}
+                    >
+                      <PlaylistAddCheckOutlinedIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Join this event">
+                    <IconButton
+                      onClick={() => navigate(`/events/${event?._id}`)}
+                    >
+                      <PlaylistAddOutlinedIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </div>
+            )}
           </div>
         </div>
+      </div>
 
-        <div
-          className="mt-3 px-3 pb-3"
-          onClick={() => navigate(`/events/${event?._id}`)}
-        >
-          <div className="mb-5">
-            <p className="mb-2 text-purple-700 font-semibold tracking-wider text-sm">
-              {dayjs(details.date).format("DD MMMM")}
-            </p>
-            <p className="text-gray-900 text-lg font-semibold leading-tight">
-              {details.title}
-            </p>
-          </div>
+      <div
+        className="px-3 pb-3 mt-3 flex flex-col flex-grow"
+        onClick={() => navigate(`/events/${event?._id}`)}
+      >
+        <div className="mb-5">
+          <p className="mb-2 text-purple-700 font-semibold tracking-wider text-sm">
+            {dayjs(details.date).format("DD MMMM")}
+          </p>
+          <p className="text-gray-900 text-lg font-semibold leading-tight">
+            {details.title}
+          </p>
+        </div>
 
-          <div className="flex gap-2 items-center">
-            <Tooltip title="Host">
-              <Avatar
-                alt="Profile Avi"
-                src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_30,h_30,c_fill,q_100/${creator?.img}.jpg`}
-                sx={{ width: 30, height: 30 }}
-              />
-            </Tooltip>
+        <div className="mt-auto flex gap-2 items-center">
+          <Tooltip title="Host">
+            <Avatar
+              alt="Profile Avi"
+              src={`https://res.cloudinary.com/${cloud_name}/image/upload/w_30,h_30,c_fill,q_100/${creator?.img}.jpg`}
+              sx={{ width: 30, height: 30 }}
+            />
+          </Tooltip>
 
-            <p className="text-xs text-gray-500 font-semibold">
-              {creator.name}
+          <p className="text-xs text-gray-500 font-semibold">{creator.name}</p>
+          <div className="flex-grow flex gap-2 justify-end items-center text-gray-500">
+            <Person3Icon fontSize="10px" />
+            <p className="text-xs">
+              {event.ticket.members.length > 0
+                ? event.ticket.members.length
+                : 0}{" "}
+              joined
             </p>
-            <div className="flex-grow flex gap-2 justify-end items-center text-gray-500">
-              <Person3Icon fontSize="10px" />
-              <p className="text-xs">
-                {event.ticket.members.length > 0
-                  ? event.ticket.members.length
-                  : 0}{" "}
-                joined
-              </p>
-            </div>
           </div>
         </div>
       </div>
