@@ -12,6 +12,7 @@ body {
   background-color: #f8f9fa !important;
   min-height: 100%;
   position: relative;
+  height: 100vh;
 }
 @tailwind base;
 @tailwind components;
